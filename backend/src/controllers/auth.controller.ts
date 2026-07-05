@@ -1,0 +1,87 @@
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { admins } from '../data/mockData';
+import { AuthRequest } from '../middleware/auth.middleware';
+
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ success: false, message: 'Email and password are required' });
+      return;
+    }
+
+    const admin = admins.find((a) => a.email === email);
+    if (!admin) {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return;
+    }
+
+    const isValid = await bcrypt.compare(password, admin.passwordHash);
+    if (!isValid) {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return;
+    }
+
+    const token = jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET || 'secret', {
+      expiresIn: '7d',
+    });
+
+    res.json({
+      success: true,
+      data: {
+        token,
+        admin: { id: admin.id, email: admin.email, name: admin.name },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const admin = admins.find((a) => a.id === req.adminId);
+
+    if (!admin) {
+      res.status(404).json({ success: false, message: 'Admin not found' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: { id: admin.id, email: admin.email, name: admin.name, createdAt: admin.createdAt },
+    });
+  } catch {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const adminIndex = admins.findIndex((a) => a.id === req.adminId);
+    if (adminIndex === -1) {
+      res.status(404).json({ success: false, message: 'Admin not found' });
+      return;
+    }
+
+    const admin = admins[adminIndex];
+    const isValid = await bcrypt.compare(currentPassword, admin.passwordHash);
+    if (!isValid) {
+      res.status(400).json({ success: false, message: 'Current password is incorrect' });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    admins[adminIndex].passwordHash = hashedPassword;
+    admins[adminIndex].updatedAt = new Date();
+
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
