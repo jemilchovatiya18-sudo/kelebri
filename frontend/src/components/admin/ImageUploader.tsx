@@ -28,16 +28,23 @@ const ImageUploader = ({ images, onChange, maxFiles = 5 }: ImageUploaderProps) =
       return;
     }
 
+    console.log('📤 Starting upload for', acceptedFiles.length, 'file(s)');
     setIsUploading(true);
 
     try {
-      const uploadPromises = acceptedFiles.map(async (file) => {
+      const uploadPromises = acceptedFiles.map(async (file, index) => {
+        console.log(`📤 Uploading file ${index + 1}:`, file.name, file.type, file.size, 'bytes');
+        
         const formData = new FormData();
         formData.append('image', file);
+        
+        console.log('🔑 Auth token present:', !!localStorage.getItem('kelebri_token'));
         
         const res = await api.post('/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
+        
+        console.log('✅ Upload response:', res.data);
         
         return {
           url: res.data.data.url,
@@ -56,9 +63,24 @@ const ImageUploader = ({ images, onChange, maxFiles = 5 }: ImageUploaderProps) =
       
       onChange(newImages);
       toast.success('Images uploaded successfully');
-    } catch (error) {
-      toast.error('Failed to upload images');
-      console.error(error);
+      console.log('✅ All images uploaded successfully');
+    } catch (error: any) {
+      console.error('❌ Upload error:', error);
+      console.error('❌ Error response:', error.response);
+      console.error('❌ Error message:', error.message);
+      
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to upload images';
+      
+      // Check for specific errors
+      if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+        toast.error('Cannot connect to server. Is the backend running on http://localhost:5000?');
+      } else if (errorMsg.includes('cloud_name') || errorMsg.includes('api_key') || errorMsg.includes('not configured')) {
+        toast.error('Cloudinary not configured. Please check backend .env file.');
+      } else if (error.response?.status === 401) {
+        toast.error('Please login again to upload images');
+      } else {
+        toast.error(errorMsg);
+      }
     } finally {
       setIsUploading(false);
     }

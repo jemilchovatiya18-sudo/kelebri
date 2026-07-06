@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getProducts,
   getProductBySlug,
+  getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -14,6 +15,12 @@ import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
+// Admin stats (must be before /:slug to avoid conflict)
+router.get('/admin/stats', authenticate, getAdminStats);
+
+// Admin get by ID (must be before /:slug)
+router.get('/admin/:id', authenticate, getProductById);
+
 // Public
 router.get('/', getProducts);
 router.get('/:slug', getProductBySlug);
@@ -25,8 +32,5 @@ router.delete('/:id', authenticate, deleteProduct);
 router.patch('/:id/flag', authenticate, toggleProductFlag);
 router.post('/:productId/images', authenticate, addProductImage);
 router.delete('/:productId/images/:imageId', authenticate, deleteProductImage);
-
-// Admin stats
-router.get('/admin/stats', authenticate, getAdminStats);
 
 export default router;

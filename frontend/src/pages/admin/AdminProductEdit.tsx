@@ -53,38 +53,44 @@ const AdminProductEdit = () => {
   });
 
   // Fetch product if editing
-  const { isLoading: isLoadingProduct } = useQuery({
+  const { isLoading: isLoadingProduct, data: productData } = useQuery({
     queryKey: ['product', id],
-    queryFn: () => api.get(`/products/${id}`).then(r => r.data.data),
+    queryFn: () => api.get(`/products/admin/${id}`).then(r => r.data.data),
     enabled: !isNew,
-    onSuccess: (data) => {
-      setFormData({
-        name: data.name,
-        sku: data.sku,
-        description: data.description || '',
-        specifications: data.specifications || '',
-        categoryId: data.categoryId,
-        diamondType: data.diamondType,
-        metalType: data.metalType,
-        metalColor: data.metalColor || '',
-        goldPurity: data.goldPurity,
-        diamondWeight: data.diamondWeight || '',
-        diamondShape: data.diamondShape || '',
-        diamondQuality: data.diamondQuality || '',
-        diamondColor: data.diamondColor || '',
-        diamondClarity: data.diamondClarity || '',
-        stoneType: data.stoneType || '',
-        certificate: data.certificate,
-        price: data.price || undefined,
-        showPrice: data.showPrice,
-        isAvailable: data.isAvailable,
-        isSoldOut: data.isSoldOut,
-        isBestSeller: data.isBestSeller,
-        isHeroProduct: data.isHeroProduct,
-      });
-      setImages(data.images || []);
-    },
   });
+
+  // Update form when product data is loaded
+  useEffect(() => {
+    if (productData && !isNew) {
+      console.log('📝 Loading product data:', productData);
+      setFormData({
+        name: productData.name || '',
+        sku: productData.sku || '',
+        description: productData.description || '',
+        specifications: productData.specifications || '',
+        categoryId: productData.categoryId || '',
+        diamondType: productData.diamondType || 'NONE',
+        metalType: productData.metalType || 'GOLD',
+        metalColor: productData.metalColor || '',
+        goldPurity: productData.goldPurity || 'NONE',
+        diamondWeight: productData.diamondWeight || '',
+        diamondShape: productData.diamondShape || '',
+        diamondQuality: productData.diamondQuality || '',
+        diamondColor: productData.diamondColor || '',
+        diamondClarity: productData.diamondClarity || '',
+        stoneType: productData.stoneType || '',
+        certificate: productData.certificate || 'NONE',
+        price: productData.price || undefined,
+        showPrice: productData.showPrice ?? false,
+        isAvailable: productData.isAvailable ?? true,
+        isSoldOut: productData.isSoldOut ?? false,
+        isBestSeller: productData.isBestSeller ?? false,
+        isHeroProduct: productData.isHeroProduct ?? false,
+      });
+      setImages(productData.images || []);
+      console.log('✅ Form data loaded successfully');
+    }
+  }, [productData, isNew]);
 
   const mutation = useMutation({
     mutationFn: (data: any) => {

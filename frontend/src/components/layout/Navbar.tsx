@@ -31,12 +31,12 @@ const Navbar = () => {
       <motion.nav
         initial={false}
         animate={{
-          backgroundColor: isScrolled ? 'rgba(250,250,248,0.97)' : 'rgba(250,250,248,0.6)',
+          backgroundColor : 'var(--color-charcoal)',
           backdropFilter: isScrolled ? 'blur(20px)' : 'blur(8px)',
           boxShadow: isScrolled ? '0 1px 0 rgba(201,168,76,0.2)' : 'none',
         }}
         transition={{ duration: 0.3 }}
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, opacity: isScrolled ? 0.95 : 1, transition: 'opacity 0.3s' }}
       >
         <div className="container-luxury">
           <div style={{ display: 'flex', alignItems: 'center', height: '72px', gap: '1rem' }}>
@@ -54,7 +54,7 @@ const Navbar = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '5px',
-                  color: 'var(--color-charcoal)',
+                  color: '#FCFCFC',
                 }}
                 aria-label="Open menu"
               >
@@ -76,7 +76,7 @@ const Navbar = () => {
                   fontSize:'1.5rem',
                   fontWeight:400,
                   letterSpacing:'0.2em',
-                  color:'var(--color-charcoal)',
+                  color:'#FCFCFC',
                   textTransform:'uppercase',
                 }}>
                   Kelebri
@@ -87,7 +87,7 @@ const Navbar = () => {
                 fontFamily:'var(--font-sans)',
                 fontSize:'0.55rem',
                 letterSpacing:'0.25em',
-                color:'var(--color-muted)',
+                color:'#FCFCFC',
                 textTransform:'uppercase',
               }}>
                 Diamonds & Jewellery
@@ -101,7 +101,7 @@ const Navbar = () => {
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 style={{
                   background:'none', border:'none', cursor:'pointer',
-                  padding:'8px', color:'var(--color-charcoal)',
+                  padding:'8px', color:'#FCFCFC',
                   transition:'color 0.2s',
                   display:'flex', alignItems:'center',
                 }}
@@ -118,7 +118,7 @@ const Navbar = () => {
                 id="nav-admin-link"
                 style={{
                   background:'none', border:'none', cursor:'pointer',
-                  padding:'8px', color:'var(--color-charcoal)',
+                  padding:'8px', color:'#FCFCFC',
                   display:'flex', alignItems:'center',
                   textDecoration:'none',
                   transition:'color 0.2s',

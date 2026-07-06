@@ -1,14 +1,20 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { X, ChevronRight, Diamond } from 'lucide-react';
-import { useEffect } from 'react';
+import { X, ChevronDown, Diamond } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const navItems = [
+type SidebarNavItem =
+  | { label: string; href: string; children?: { label: string; href: string }[] }
+  | { type: 'divider' };
+
+const isDividerItem = (item: SidebarNavItem): item is { type: 'divider' } => 'type' in item && item.type === 'divider';
+
+const navItems: SidebarNavItem[] = [
   { label: 'Home', href: '/' },
   {
     label: 'Collections',
@@ -22,6 +28,7 @@ const navItems = [
       { label: 'Tennis Collection', href: '/collections/tennis-collection' },
     ],
   },
+  { type: 'divider' },
   {
     label: 'Diamonds',
     href: '/diamonds',
@@ -32,6 +39,7 @@ const navItems = [
       { label: 'Custom Jewelry', href: '/collections/custom-jewelry' },
     ],
   },
+  { type: 'divider' },
   { label: 'About Us', href: '/about' },
   { label: 'Education', href: '/education' },
   { label: 'Contact', href: '/contact' },
@@ -40,9 +48,23 @@ const navItems = [
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
-  // Close on route change
-  useEffect(() => { onClose(); }, [location.pathname]);
+  // Toggle section expansion - only one section can be expanded at a time
+  const toggleSection = (label: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedSection(prev => prev === label ? null : label);
+  };
+
+  // Close on route change only (not when sidebar opens)
+  useEffect(() => {
+    if (isOpen) {
+      onClose(); 
+      setExpandedSection(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   // Prevent body scroll when open
   useEffect(() => {
@@ -116,60 +138,144 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
             {/* Nav items */}
             <nav style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 0' }}>
-              {navItems.map((item, i) => (
-                <div key={i}>
-                  {/* Parent item */}
-                  <div style={{ padding: '0 2rem' }}>
-                    <Link
-                      to={item.href}
-                      id={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0.875rem 0',
-                        borderBottom: '1px solid var(--color-border)',
-                        textDecoration: 'none',
-                        color: location.pathname === item.href ? 'var(--color-gold)' : 'var(--color-charcoal)',
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '0.8125rem',
-                        fontWeight: 500,
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        transition: 'color 0.2s',
-                      }}
-                    >
-                      {item.label}
-                      {item.children && <ChevronRight size={14} style={{ color:'var(--color-muted)' }} />}
-                    </Link>
-                  </div>
+              {navItems.map((item, i) => {
+                if (isDividerItem(item)) {
+                  return (
+                    <div key={i} style={{ margin: '0.75rem 2rem', borderTop: '1px solid var(--color-border)' }} />
+                  );
+                }
 
-                  {/* Children */}
-                  {item.children && (
-                    <div style={{ background:'white', padding:'0.5rem 0' }}>
-                      {item.children.map((child, j) => (
-                        <div key={j} style={{ padding: '0 2rem 0 3rem' }}>
-                          <Link
-                            to={child.href}
+                return (
+                  <div key={i}>
+                    <div style={{ padding: '0 2rem' }}>
+                      {item.children ? (
+                        <button
+                          onClick={(e) => toggleSection(item.label, e)}
+                          id={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.875rem 0',
+                            borderBottom: '1px solid var(--color-border)',
+                            background: 'none',
+                            border: 'none',
+                            textDecoration: 'none',
+                            color: expandedSection === item.label ? 'var(--color-gold)' : 'var(--color-charcoal)',
+                            fontFamily: 'var(--font-sans)',
+                            fontSize: '0.8125rem',
+                            fontWeight: 500,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            transition: 'color 0.2s',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                          }}
+                        >
+                          {item.label}
+                          <motion.div
+                            animate={{ rotate: expandedSection === item.label ? 180 : 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <ChevronDown 
+                              size={14} 
+                              style={{ 
+                                color: expandedSection === item.label ? 'var(--color-gold)' : 'var(--color-muted)',
+                                transition: 'color 0.2s',
+                              }} 
+                            />
+                          </motion.div>
+                        </button>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          id={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.875rem 0',
+                            borderBottom: '1px solid var(--color-border)',
+                            textDecoration: 'none',
+                            color: location.pathname === item.href ? 'var(--color-gold)' : 'var(--color-charcoal)',
+                            fontFamily: 'var(--font-sans)',
+                            fontSize: '0.8125rem',
+                            fontWeight: 500,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            transition: 'color 0.2s',
+                          }}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+                    </div>
+
+                    {item.children && (
+                      <AnimatePresence initial={false}>
+                        {expandedSection === item.label && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ 
+                              height: 'auto', 
+                              opacity: 1,
+                              transition: {
+                                height: { duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] },
+                                opacity: { duration: 0.3, delay: 0.1 }
+                              }
+                            }}
+                            exit={{ 
+                              height: 0, 
+                              opacity: 0,
+                              transition: {
+                                height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
+                                opacity: { duration: 0.2 }
+                              }
+                            }}
                             style={{
-                              display: 'block',
-                              padding: '0.625rem 0',
-                              textDecoration: 'none',
-                              color: location.pathname === child.href ? 'var(--color-gold)' : 'var(--color-muted)',
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: '0.8125rem',
-                              letterSpacing: '0.06em',
-                              transition: 'color 0.2s',
+                              overflow: 'hidden',
+                              background: 'white',
                             }}
                           >
-                            {child.label}
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                            <div style={{ padding: '0.5rem 0' }}>
+                              {item.children.map((child, j) => (
+                                <motion.div
+                                  key={j}
+                                  initial={{ x: -10, opacity: 0 }}
+                                  animate={{ 
+                                    x: 0, 
+                                    opacity: 1,
+                                    transition: { delay: j * 0.05, duration: 0.2 }
+                                  }}
+                                  style={{ padding: '0 2rem 0 3rem' }}
+                                >
+                                  <Link
+                                    to={child.href}
+                                    style={{
+                                      display: 'block',
+                                      padding: '0.625rem 0',
+                                      textDecoration: 'none',
+                                      color: location.pathname === child.href ? 'var(--color-gold)' : 'var(--color-muted)',
+                                      fontFamily: 'var(--font-sans)',
+                                      fontSize: '0.8125rem',
+                                      letterSpacing: '0.06em',
+                                      transition: 'color 0.2s',
+                                    }}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </div>
+                );
+              })}
             </nav>
 
             {/* Footer CTA */}

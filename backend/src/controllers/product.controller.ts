@@ -67,6 +67,21 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+export const getProductById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const product = products.find((p) => p.id === req.params.id);
+    if (!product) {
+      res.status(404).json({ success: false, message: 'Product not found' });
+      return;
+    }
+
+    const populatedProduct = populateProduct(product);
+    res.json({ success: true, data: populatedProduct });
+  } catch {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 export const getProductBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
     let product = products.find((p) => p.slug === req.params.slug);
