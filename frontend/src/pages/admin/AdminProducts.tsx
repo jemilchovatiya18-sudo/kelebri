@@ -17,7 +17,7 @@ const AdminProducts = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-products', page, search],
     queryFn: () => api.get('/products', { params: { page, limit, search } }).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 
   const products: Product[] = data?.data || [];
@@ -27,8 +27,8 @@ const AdminProducts = () => {
     mutationFn: (id: string) => api.delete(`/products/${id}`),
     onSuccess: () => {
       toast.success('Product deleted');
-      queryClient.invalidateQueries(['admin-products']);
-      queryClient.invalidateQueries(['admin-stats']);
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] as const });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] as const });
     },
     onError: () => toast.error('Failed to delete product'),
   });
@@ -38,7 +38,7 @@ const AdminProducts = () => {
       api.patch(`/products/${id}/flag`, { flag, value }),
     onSuccess: () => {
       toast.success('Status updated');
-      queryClient.invalidateQueries(['admin-products']);
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] as const });
     },
     onError: () => toast.error('Failed to update status'),
   });

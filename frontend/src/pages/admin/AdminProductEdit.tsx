@@ -102,8 +102,8 @@ const AdminProductEdit = () => {
     },
     onSuccess: () => {
       toast.success(isNew ? 'Product created' : 'Product updated');
-      queryClient.invalidateQueries(['admin-products']);
-      queryClient.invalidateQueries(['admin-stats']);
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] as const });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] as const });
       navigate('/admin/products');
     },
     onError: (error: any) => {
@@ -164,11 +164,11 @@ const AdminProductEdit = () => {
           </div>
           <button
             onClick={handleSubmit}
-            disabled={mutation.isLoading}
+            disabled={mutation.status === 'pending'}
             className="btn-luxury"
             style={{ borderRadius: '6px', padding: '0.625rem 1.25rem' }}
           >
-            {mutation.isLoading ? <Loader2 size={18} className="animate-spin" /> : <><Save size={18} /> Save Product</>}
+            {mutation.status === 'pending' ? <Loader2 size={18} className="animate-spin" /> : <><Save size={18} /> Save Product</>}
           </button>
         </div>
 

@@ -1,13 +1,19 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut, Diamond } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Diamond, X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useEffect } from 'react';
 
 const navItems = [
   { icon: <LayoutDashboard size={20} />, label: 'Dashboard', href: '/admin' },
   { icon: <Package size={20} />, label: 'Products', href: '/admin/products' },
 ];
 
-const AdminSidebar = () => {
+interface AdminSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+const AdminSidebar = ({ isOpen = false, onClose }: AdminSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, admin } = useAuthStore();
@@ -17,37 +23,112 @@ const AdminSidebar = () => {
     navigate('/admin/login');
   };
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    if (isOpen && onClose) {
+      onClose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Handle backdrop click
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <aside style={{
-      width: '260px',
-      height: '100vh',
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      background: 'var(--color-charcoal)',
-      color: 'white',
-      display: 'flex',
-      flexDirection: 'column',
-      borderRight: '1px solid rgba(255,255,255,0.1)',
-      zIndex: 100,
-    }}>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="admin-sidebar-backdrop"
+          onClick={handleBackdropClick}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999,
+            animation: 'fadeIn 0.3s ease',
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className="admin-sidebar"
+        style={{
+          width: '260px',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          background: 'var(--color-charcoal)',
+          color: 'white',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: '1px solid rgba(255,255,255,0.1)',
+          zIndex: 1000,
+          transition: 'transform 0.3s ease',
+        }}>
       {/* Brand */}
       <div style={{
         padding: '2rem 1.5rem',
         borderBottom: '1px solid rgba(255,255,255,0.1)',
         display: 'flex',
         alignItems: 'center',
-        gap: '0.75rem',
+        justifyContent: 'space-between',
       }}>
-        <Diamond size={24} style={{ color: 'var(--color-gold)' }} />
-        <div>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            Kelebri
-          </h2>
-          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.625rem', color: 'var(--color-gold)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            Admin Panel
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Diamond size={24} style={{ color: 'var(--color-gold)' }} />
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Kelebri
+            </h2>
+            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.625rem', color: 'var(--color-gold)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Admin Panel
+            </span>
+          </div>
         </div>
+        
+        {/* Mobile Close Button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="admin-sidebar-close"
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              borderRadius: '6px',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            aria-label="Close sidebar"
+          >
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       {/* Nav links */}
@@ -121,7 +202,37 @@ const AdminSidebar = () => {
           Logout
         </button>
       </div>
+
+      {/* Mobile-only responsive styles */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        /* Desktop - sidebar always visible */
+        @media (min-width: 769px) {
+          .admin-sidebar {
+            transform: translateX(0) !important;
+          }
+          .admin-sidebar-backdrop {
+            display: none !important;
+          }
+          .admin-sidebar-close {
+            display: none !important;
+          }
+        }
+
+        /* Mobile - sidebar hidden by default, slides in when open */
+        @media (max-width: 768px) {
+          .admin-sidebar {
+            transform: translateX(${isOpen ? '0' : '-100%'});
+            box-shadow: ${isOpen ? '2px 0 8px rgba(0,0,0,0.2)' : 'none'};
+          }
+        }
+      `}</style>
     </aside>
+    </>
   );
 };
 

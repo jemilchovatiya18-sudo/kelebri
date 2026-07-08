@@ -1,0 +1,98 @@
+﻿
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+src/pages/AboutUs.tsx(43,89): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AboutUs.tsx(67,13): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AboutUs.tsx(102,17): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AboutUs.tsx(137,17): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/admin/AdminProductEdit.tsx(167,32): error TS2339: Property 'isLoading' does not exist on type 'UseMutationResult<AxiosResponse<any, any, {}>, any, any, unknown>'.
+  Property 'isLoading' does not exist on type 'Override<MutationObserverIdleResult<AxiosResponse<any, any, {}>, any, any, unknown>, { mutate: UseMutateFunction<AxiosResponse<any, any, {}>, any, any, unknown>; }> & { ...; }'.
+src/pages/admin/AdminProductEdit.tsx(171,23): error TS2339: Property 'isLoading' does not exist on type 'UseMutationResult<AxiosResponse<any, any, {}>, any, any, unknown>'.
+  Property 'isLoading' does not exist on type 'Override<MutationObserverIdleResult<AxiosResponse<any, any, {}>, any, any, unknown>, { mutate: UseMutateFunction<AxiosResponse<any, any, {}>, any, any, unknown>; }> & { ...; }'.
+src/pages/CollectionPage.tsx(6,1): error TS6192: All imports in import declaration are unused.
+src/pages/CollectionPage.tsx(43,5): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<unknown, Error, unknown, (string | number | undefined)[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<...>', gave the following error.
+    Object literal may only specify known properties, and 'keepPreviousData' does not exist in type 'DefinedInitialDataOptions<unknown, Error, unknown, (string | number | undefined)[]>'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<any, Error, any, (string | number | undefined)[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Object literal may only specify known properties, and 'keepPreviousData' does not exist in type 'UndefinedInitialDataOptions<any, Error, any, (string | number | undefined)[]>'.
+  Overload 3 of 3, '(options: UseQueryOptions<any, Error, any, (string | number | undefined)[]>, queryClient?: QueryClient | undefined): UseQueryResult<any, Error>', gave the following error.
+    Object literal may only specify known properties, and 'keepPreviousData' does not exist in type 'UseQueryOptions<any, Error, any, (string | number | undefined)[]>'.
+src/pages/CollectionPage.tsx(46,37): error TS2339: Property 'data' does not exist on type '{}'.
+src/pages/CollectionPage.tsx(47,22): error TS2339: Property 'meta' does not exist on type '{}'.
+src/pages/CollectionPage.tsx(184,19): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/Contact.tsx(99,23): error TS2322: Type '{ hidden: { opacity: number; y: number; }; visible: (i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '(i?: number) => { opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetResolver'.
+        Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'string | TargetAndTransition'.
+          Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+            Type '{ opacity: number; y: number; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+              Types of property 'transition' are incompatible.
+                Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+                  Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                      Types of property 'ease' are incompatible.
+                        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/Home.tsx(1,18): error TS1484: 'Variants' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/SearchPage.tsx(1,20): error TS6133: 'useEffect' is declared but its value is never read.

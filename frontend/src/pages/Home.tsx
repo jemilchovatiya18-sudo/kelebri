@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import type { Variants } from 'framer-motion';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { ChevronDown } from 'lucide-react';
@@ -9,11 +10,11 @@ import type { Category, Product } from '../types';
 import CategoryCard from '../components/ui/CategoryCard';
 import ProductCard from '../components/ui/ProductCard';
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
     opacity: 1, y: 0,
-    transition: { duration: 0.7, delay: i * 0.1, ease: 'easeOut' },
+    transition: { duration: 0.7, delay: i * 0.1, ease: 'easeOut' as const },
   }),
 };
 
@@ -57,13 +58,15 @@ const Home = () => {
       </Helmet>
 
       {/* ── HERO VIDEO ────────────────────────────── */}
-      <section style={{
-        position: 'relative',
-        height: '100vh',
-        minHeight: '600px',
-        overflow: 'hidden',
-        background: 'var(--color-charcoal)',
-      }}>
+      <section 
+        className="hero-section"
+        style={{
+          position: 'relative',
+          height: '100vh',
+          minHeight: '600px',
+          overflow: 'hidden',
+          background: 'var(--color-charcoal)',
+        }}>
         {/* Video */}
         <video
           autoPlay
@@ -75,13 +78,13 @@ const Home = () => {
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
             objectFit: 'cover',
-            opacity: videoLoaded ? 0.6 : 0,
+            opacity: videoLoaded ? 0.9 : 0,
             transition: 'opacity 1.5s ease',
           }}
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-diamond-ring-on-a-dark-background-17882-large.mp4" type="video/mp4" />
+          <source src="https:// assets.mixkit.co/videos/preview/mixkit-close-up-of-a-diamond-ring-on-a-dark-background-17882-large.mp4 " type="video/mp4" />
           {/* Fallback */}
-          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+          <source src="https://iracarats.com/cdn/shop/videos/c/vp/4245de4c14174ada83086a2327dd5f7d/4245de4c14174ada83086a2327dd5f7d.HD-1080p-7.2Mbps-57527704.mp4?v=0" type="video/mp4" />
         </video>
 
         {/* Fallback bg image if video not loaded */}
@@ -90,26 +93,27 @@ const Home = () => {
             position:'absolute', inset:0,
             backgroundImage:'url(https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&q=80)',
             backgroundSize:'cover', backgroundPosition:'center',
-            opacity:0.5,
+            // opacity:0.5,
           }} />
         )}
 
         {/* Overlay gradient */}
         <div style={{
           position:'absolute', inset:0,
-          background:'linear-gradient(to bottom, rgba(26,26,26,0.3) 0%, rgba(26,26,26,0.5) 60%, rgba(26,26,26,0.8) 100%)',
+          // background:'linear-gradient(to bottom, rgba(26,26,26,0.3) 0%, rgba(26,26,26,0.5) 60%, rgba(26,26,26,0.8) 100%)',
         }} />
 
         {/* Gold shimmer particle effect */}
         <div style={{
           position:'absolute', inset:0,
-          background:'radial-gradient(ellipse at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%)',
+          // background:'radial-gradient(elli pse at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%)',
         }} />
 
         {/* Hero content */}
         <div style={{
           position:'relative', zIndex:10,
           height:'100%',
+          margin:'5% 0',
           display:'flex', flexDirection:'column',
           alignItems:'center', justifyContent:'center',
           textAlign:'center',
@@ -155,7 +159,7 @@ const Home = () => {
           </motion.div>
 
           {/* Subheading */}
-          <motion.p
+          {/* <motion.p
             variants={fadeUp} initial="hidden" animate="visible" custom={3}
             style={{
               fontFamily:'var(--font-sans)',
@@ -168,7 +172,7 @@ const Home = () => {
           >
             Crafted for those who believe in the extraordinary.
             Each piece is a testament to timeless elegance.
-          </motion.p>
+          </motion.p> */}
 
           {/* CTA buttons */}
           <motion.div
@@ -212,7 +216,7 @@ const Home = () => {
       </section>
 
       {/* ── JEWELRY CATEGORIES ────────────────────── */}
-      <section id="collections-section" className="section-padding" style={{ background:'white' }}>
+      <section id="collections-section" className="section-padding jewelry-section" style={{ background:'white' }}>
         <div className="container-luxury">
           {/* Section header */}
           <motion.div
@@ -239,11 +243,13 @@ const Home = () => {
           </motion.div>
 
           {/* 6-category grid */}
-          <div style={{
-            display:'grid',
-            gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',
-            gap:'1.5rem',
-          }}>
+          <div 
+            className="jewelry-categories-grid"
+            style={{
+              display:'grid',
+              gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',
+              gap:'1.5rem',
+            }}>
             {(jewelryCategories.length > 0 ? jewelryCategories : [
               { id:'1', name:'Rings', slug:'rings', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
               { id:'2', name:'Earrings', slug:'earrings', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
@@ -266,7 +272,7 @@ const Home = () => {
 
       {/* ── BEST SELLERS ─────────────────────────── */}
       {bestSellers.length > 0 && (
-        <section className="section-padding" style={{ background:'var(--color-cream)' }}>
+        <section className="section-padding best-sellers-section" style={{ background:'  ' }}>
           <div className="container-luxury">
             <motion.div
               initial="hidden" whileInView="visible" viewport={{ once:true, amount:0.3 }}
@@ -291,11 +297,13 @@ const Home = () => {
               <div className="gold-divider" />
             </motion.div>
 
-            <div style={{
-              display:'grid',
-              gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))',
-              gap:'1.5rem',
-            }}>
+            <div 
+              className="products-grid"
+              style={{
+                display:'grid',
+                gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))',
+                gap:'1.5rem',
+              }}>
               {bestSellers.map((product, i) => (
                 <motion.div
                   key={product.id}
@@ -317,7 +325,7 @@ const Home = () => {
       )}
 
       {/* ── DIAMOND CATEGORIES ────────────────────── */}
-      <section className="section-padding" style={{
+      <section className="section-padding diamond-section" style={{
         background:'var(--color-charcoal)',
         position:'relative', overflow:'hidden',
       }}>
@@ -353,11 +361,13 @@ const Home = () => {
             <div className="gold-divider" />
           </motion.div>
 
-          <div style={{
-            display:'grid',
-            gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))',
-            gap:'1.5rem',
-          }}>
+          <div 
+            className="diamond-categories-grid"
+            style={{
+              display:'grid',
+              gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))',
+              gap:'1.5rem',
+            }}>
             {(diamondCategories.length > 0 ? diamondCategories : [
               { id:'7', name:'Lab Grown Diamonds', slug:'lab-grown-diamonds', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
               { id:'8', name:'Natural Diamonds', slug:'natural-diamonds', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
@@ -378,7 +388,7 @@ const Home = () => {
 
       {/* ── HERO PRODUCTS ─────────────────────────── */}
       {heroProducts.length > 0 && (
-        <section className="section-padding" style={{ background:'white' }}>
+        <section className="section-padding hero-products-section" style={{ background:'white' }}>
           <div className="container-luxury">
             <motion.div
               initial="hidden" whileInView="visible" viewport={{ once:true, amount:0.3 }}
@@ -403,11 +413,13 @@ const Home = () => {
               <div className="gold-divider" />
             </motion.div>
 
-            <div style={{
-              display:'grid',
-              gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',
-              gap:'2rem',
-            }}>
+            <div 
+              className="hero-products-grid"
+              style={{
+                display:'grid',
+                gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',
+                gap:'2rem',
+              }}>
               {heroProducts.map((product, i) => (
                 <motion.div
                   key={product.id}
@@ -514,6 +526,229 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* ── MOBILE-ONLY RESPONSIVE STYLES ────────── */}
+      <style>{`
+        /* Mobile-only optimizations (tablets and phones) */
+        @media (max-width: 768px) {
+          /* ========== HERO SECTION ========== */
+          .hero-section {
+            height: 70vh !important;
+            min-height: 500px !important;
+          }
+
+          .hero-section > div {
+            padding: 1.5rem !important;
+          }
+
+          .hero-section h1 {
+            font-size: clamp(2.5rem, 7vw, 4rem) !important;
+            margin-bottom: 1rem !important;
+          }
+
+          .hero-section p:first-of-type {
+            font-size: 0.625rem !important;
+            margin-bottom: 1rem !important;
+          }
+
+          .hero-section > div > div:last-of-type {
+            flex-direction: column !important;
+            width: 100%;
+            max-width: 300px;
+          }
+
+          .hero-section .btn-luxury,
+          .hero-section .btn-outline {
+            width: 100%;
+          }
+
+          /* ========== JEWELRY CATEGORIES ========== */
+          .jewelry-section {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+          }
+
+          .jewelry-categories-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+            gap: 1rem !important;
+          }
+
+          .jewelry-section h2 {
+            font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+            margin-bottom: 1rem !important;
+          }
+
+          .jewelry-section .container-luxury > div:first-child {
+            margin-bottom: 2.5rem !important;
+          }
+
+          /* ========== BEST SELLERS SECTION ========== */
+          .best-sellers-section {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+          }
+
+          .best-sellers-section .container-luxury > div:first-child {
+            margin-bottom: 2.5rem !important;
+          }
+
+          .best-sellers-section h2 {
+            font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+          }
+
+          /* Products grid - 2 columns on mobile */
+          .products-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+          }
+
+          /* ========== DIAMOND SECTION ========== */
+          .diamond-section {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+          }
+
+          .diamond-section .container-luxury > div:first-child {
+            margin-bottom: 2.5rem !important;
+          }
+
+          .diamond-section h2 {
+            font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+          }
+
+          /* Diamond categories grid - 2 columns on mobile */
+          .diamond-categories-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+          }
+
+          /* ========== HERO PRODUCTS SECTION ========== */
+          .hero-products-section {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+          }
+
+          .hero-products-section .container-luxury > div:first-child {
+            margin-bottom: 2.5rem !important;
+          }
+
+          .hero-products-section h2 {
+            font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+          }
+
+          /* Hero Products grid - 2 columns on mobile */
+          .hero-products-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+          }
+
+          /* ========== PRODUCT & CATEGORY CARDS ========== */
+          /* Reduce card padding */
+          .luxury-card > div:last-child {
+            padding: 1rem !important;
+          }
+
+          /* Product image aspect ratio - less tall on mobile */
+          .luxury-card > div:first-child {
+            padding-bottom: 100% !important;
+          }
+
+          /* Product card typography */
+          .luxury-card h3 {
+            font-size: 0.9375rem !important;
+            margin-bottom: 0.375rem !important;
+          }
+
+          .luxury-card > div:last-child > p:first-child {
+            font-size: 0.625rem !important;
+            margin-bottom: 0.25rem !important;
+          }
+
+          .luxury-card > div:last-child > p:nth-child(3) {
+            font-size: 0.6875rem !important;
+          }
+
+          .luxury-card > div:last-child > p:nth-child(4) {
+            font-size: 1rem !important;
+            margin-top: 0.5rem !important;
+          }
+
+          /* View details section */
+          .luxury-card > div:last-child > div:last-child {
+            margin-top: 0.75rem !important;
+            padding-top: 0.75rem !important;
+          }
+
+          .luxury-card > div:last-child > div:last-child > span:first-child {
+            font-size: 0.625rem !important;
+          }
+
+          /* Container padding */
+          .container-luxury {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+          }
+        }
+
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+          /* Further reduce hero */
+          .hero-section {
+            height: 65vh !important;
+            min-height: 450px !important;
+          }
+
+          /* Smaller category cards */
+          .jewelry-categories-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+            gap: 0.75rem !important;
+          }
+
+          /* Tighter product grids */
+          .products-grid,
+          .diamond-categories-grid,
+          .hero-products-grid {
+            gap: 0.75rem !important;
+          }
+
+          /* Further reduce card padding */
+          .luxury-card > div:last-child {
+            padding: 0.875rem !important;
+          }
+
+          /* Smaller typography */
+          .luxury-card h3 {
+            font-size: 0.875rem !important;
+            line-height: 1.25 !important;
+          }
+
+          .luxury-card > div:last-child > p:nth-child(4) {
+            font-size: 0.9375rem !important;
+          }
+
+          /* Tighter container */
+          .container-luxury {
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
+          }
+
+          /* Reduce section padding */
+          .best-sellers-section,
+          .diamond-section,
+          .hero-products-section,
+          .jewelry-section {
+            padding-top: 2.5rem !important;
+            padding-bottom: 2.5rem !important;
+          }
+        }
+
+        /* Disable hover effects on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+          .luxury-card:hover {
+            transform: none !important;
+          }
+        }
+      `}</style>
     </HelmetProvider>
   );
 };

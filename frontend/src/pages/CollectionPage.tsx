@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -35,12 +36,11 @@ const CollectionPage = () => {
     enabled: !!category,
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<{ data: Product[]; meta?: { total?: number; totalPages?: number } }, Error>({
     queryKey: ['products', category, diamondFilter, page],
     queryFn: () => api.get(`/products`, {
       params: { category, diamondType: diamondFilter || undefined, page, limit },
     }).then(r => r.data),
-    keepPreviousData: true,
   });
 
   const products: Product[] = data?.data || [];

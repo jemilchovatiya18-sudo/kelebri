@@ -1,9 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../lib/api';
 import type { ProductWithRelated } from '../types';
 import WhatsAppButton from '../components/ui/WhatsAppButton';
@@ -17,12 +17,43 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [activeImage, setActiveImage] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications'>('description');
+  const [dragDirection, setDragDirection] = useState(0);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['product', slug],
     queryFn: () => api.get(`/products/${slug}`).then(r => r.data.data as ProductWithRelated),
     enabled: !!slug,
   });
+
+  // Navigate to previous image
+  const goToPrevious = useCallback(() => {
+    if (!data?.images?.length) return;
+    setActiveImage((prev) => (prev - 1 + data.images.length) % data.images.length);
+  }, [data?.images?.length]);
+
+  // Navigate to next image
+  const goToNext = useCallback(() => {
+    if (!data?.images?.length) return;
+    setActiveImage((prev) => (prev + 1) % data.images.length);
+  }, [data?.images?.length]);
+
+  // Handle drag/swipe gestures
+  const handleDragEnd = useCallback((_event: any, info: any) => {
+    const swipeThreshold = 50; // Minimum distance to trigger swipe
+    const swipeVelocity = 500; // Minimum velocity to trigger swipe
+
+    if (Math.abs(info.offset.x) > swipeThreshold || Math.abs(info.velocity.x) > swipeVelocity) {
+      if (info.offset.x > 0) {
+        // Swiped right -> go to previous
+        setDragDirection(-1);
+        goToPrevious();
+      } else {
+        // Swiped left -> go to next
+        setDragDirection(1);
+        goToNext();
+      }
+    }
+  }, [goToPrevious, goToNext]);
 
   if (isLoading) return (
     <div style={{ minHeight:'100vh', paddingTop:'72px', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -98,92 +129,226 @@ const ProductDetail = () => {
           }}>
             {/* Image gallery */}
             <div>
-              {/* Main image */}
-              <motion.div
-                key={activeImage}
-                initial={{ opacity:0 }} animate={{ opacity:1 }}
-                transition={{ duration:0.4 }}
-                style={{
-                  position:'relative', paddingBottom:'110%', overflow:'hidden',
-                  background:'var(--color-cream)',
-                  marginBottom:'1rem',
-                }}
-              >
-                <img
-                  src={primaryImageUrl}
-                  alt={product.name}
-                  style={{
-                    position:'absolute', inset:0,
-                    width:'100%', height:'100%',
-                    objectFit:'cover',
-                  }}
-                />
+              {/* Main image with smooth transitions */}
+              <div style={{
+                position: 'relative',
+                paddingBottom: '110%',
+                overflow: 'hidden',
+                background: 'var(--color-cream)',
+                marginBottom: '1rem',
+                borderRadius: '2px',
+              }}>
+                <AnimatePresence initial={false} mode="wait">
+                  <motion.div
+                    key={activeImage}
+                    initial={{ 
+                      opacity: 0,
+                      x: dragDirection > 0 ? -20 : dragDirection < 0 ? 20 : 0,
+                    }}
+                    animate={{ 
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{ 
+                      opacity: 0,
+                      x: dragDirection > 0 ? 20 : dragDirection < 0 ? -20 : 0,
+                    }}
+                    transition={{
+                      x: { type: "spring", stiffness: 300, damping: 30 },
+                      opacity: { duration: 0.3 }
+                    }}
+                    drag={images.length > 1 ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={handleDragEnd}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      cursor: images.length > 1 ? 'grab' : 'default',
+                      userSelect: 'none',
+                    }}
+                    whileTap={{ cursor: images.length > 1 ? 'grabbing' : 'default' }}
+                  >
+                    <img
+                      src={primaryImageUrl}
+                      alt={product.name}
+                      draggable={false}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        pointerEvents: 'none',
+                      }}
+                    />
 
-                {product.isSoldOut && (
-                  <div style={{
-                    position:'absolute', inset:0,
-                    background:'rgba(26,26,26,0.5)',
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                  }}>
-                    <span style={{
-                      fontFamily:'var(--font-sans)', fontSize:'1rem',
-                      letterSpacing:'0.2em', textTransform:'uppercase',
-                      color:'white', fontWeight:600,
-                    }}>
-                      Sold Out
-                    </span>
-                  </div>
-                )}
+                    {product.isSoldOut && (
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(26,26,26,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        pointerEvents: 'none',
+                      }}>
+                        <span style={{
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '1rem',
+                          letterSpacing: '0.2em',
+                          textTransform: 'uppercase',
+                          color: 'white',
+                          fontWeight: 600,
+                        }}>
+                          Sold Out
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
 
-                {/* Image navigation arrows */}
+                {/* Image navigation arrows - Always visible when multiple images */}
                 {images.length > 1 && (
                   <>
-                    <button
-                      onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
-                      style={{
-                        position:'absolute', left:'1rem', top:'50%', transform:'translateY(-50%)',
-                        background:'rgba(255,255,255,0.9)', border:'none', cursor:'pointer',
-                        width:'36px', height:'36px', display:'flex', alignItems:'center', justifyContent:'center',
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDragDirection(-1);
+                        goToPrevious();
                       }}
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={() => setActiveImage((activeImage + 1) % images.length)}
+                      whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,1)' }}
+                      whileTap={{ scale: 0.95 }}
                       style={{
-                        position:'absolute', right:'1rem', top:'50%', transform:'translateY(-50%)',
-                        background:'rgba(255,255,255,0.9)', border:'none', cursor:'pointer',
-                        width:'36px', height:'36px', display:'flex', alignItems:'center', justifyContent:'center',
+                        position: 'absolute',
+                        left: '1rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'rgba(255,255,255,0.95)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        width: '44px',
+                        height: '44px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        zIndex: 10,
+                        transition: 'all 0.2s',
                       }}
+                      aria-label="Previous image"
                     >
-                      <ChevronRight size={18} />
-                    </button>
+                      <ChevronLeft size={20} style={{ color: 'var(--color-charcoal)' }} />
+                    </motion.button>
+
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDragDirection(1);
+                        goToNext();
+                      }}
+                      whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,1)' }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{
+                        position: 'absolute',
+                        right: '1rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'rgba(255,255,255,0.95)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        width: '44px',
+                        height: '44px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        zIndex: 10,
+                        transition: 'all 0.2s',
+                      }}
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={20} style={{ color: 'var(--color-charcoal)' }} />
+                    </motion.button>
+
+                    {/* Image counter indicator */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '1rem',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: 'rgba(0,0,0,0.6)',
+                      color: 'white',
+                      padding: '0.375rem 0.875rem',
+                      borderRadius: '20px',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.05em',
+                      zIndex: 10,
+                    }}>
+                      {activeImage + 1} / {images.length}
+                    </div>
                   </>
                 )}
-              </motion.div>
+              </div>
 
-              {/* Thumbnails */}
+              {/* Thumbnails with smooth transitions */}
               {images.length > 1 && (
-                <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '0.75rem', 
+                  flexWrap: 'wrap',
+                  justifyContent: images.length <= 5 ? 'flex-start' : 'flex-start',
+                }}>
                   {images.map((img, i) => (
-                    <button
+                    <motion.button
                       key={img.id}
-                      onClick={() => setActiveImage(i)}
-                      style={{
-                        width:'70px', height:'70px', padding:0,
-                        border:'2px solid',
-                        borderColor: i === activeImage ? 'var(--color-gold)' : 'transparent',
-                        cursor:'pointer', overflow:'hidden',
-                        transition:'border-color 0.2s',
-                        background:'none',
+                      onClick={() => {
+                        setDragDirection(i > activeImage ? 1 : -1);
+                        setActiveImage(i);
                       }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{
+                        width: '70px',
+                        height: '70px',
+                        padding: 0,
+                        border: '2px solid',
+                        borderColor: i === activeImage ? 'var(--color-gold)' : 'var(--color-border)',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s ease',
+                        background: 'none',
+                        borderRadius: '2px',
+                        position: 'relative',
+                      }}
+                      aria-label={`View image ${i + 1}`}
                     >
                       <img
                         src={img.url}
                         alt={`${product.name} ${i + 1}`}
-                        style={{ width:'100%', height:'100%', objectFit:'cover' }}
+                        draggable={false}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          opacity: i === activeImage ? 1 : 0.7,
+                          transition: 'opacity 0.3s ease',
+                        }}
                       />
-                    </button>
+                      {i === activeImage && (
+                        <motion.div
+                          layoutId="activeIndicator"
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            border: '2px solid var(--color-gold)',
+                            pointerEvents: 'none',
+                          }}
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </motion.button>
                   ))}
                 </div>
               )}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, Menu, X, Diamond } from 'lucide-react';
+import { Search, User, X, Diamond } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 const Navbar = () => {
@@ -153,7 +153,7 @@ const Navbar = () => {
                       style={{
                         flex:1, background:'transparent', border:'none', outline:'none',
                         fontFamily:'var(--font-sans)', fontSize:'0.9375rem',
-                        color:'var(--color-charcoal)',
+                        color:'#FCFCFC',
                       }}
                     />
                     <button type="submit" className="btn-luxury" style={{ padding:'0.5rem 1.25rem', fontSize:'0.75rem' }}>
