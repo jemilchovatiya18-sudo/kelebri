@@ -45,7 +45,7 @@ const CollectionPage = () => {
 
   const products: Product[] = data?.data || [];
   const meta = data?.meta;
-  const categoryName = categoryData?.name || category?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const categoryName = categoryData?.name || category?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'All Collections';
 
   return (
     <>
@@ -56,45 +56,45 @@ const CollectionPage = () => {
 
       {/* Hero banner */}
       <section style={{
-        height:'300px', position:'relative', overflow:'hidden',
-        background:'var(--color-charcoal)',
-        marginTop:'72px',
+        height: 'clamp(140px, 18vh, 180px)', position: 'relative', overflow: 'hidden',
+        background: 'var(--color-charcoal)',
+        marginTop: '72px',
       }}>
         <div style={{
-          position:'absolute', inset:0,
-          backgroundImage:`url(https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&q=60)`,
-          backgroundSize:'cover', backgroundPosition:'center',
-          opacity:0.3,
+          position: 'absolute', inset: 0,
+          backgroundImage: `url(https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&q=60)`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          opacity: 0.3,
         }} />
         <div style={{
-          position:'absolute', inset:0,
-          background:'linear-gradient(to bottom, rgba(26,26,26,0.4), rgba(26,26,26,0.7))',
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(26,26,26,0.4), rgba(26,26,26,0.7))',
         }} />
         <div style={{
-          position:'relative', zIndex:1,
-          height:'100%', display:'flex', flexDirection:'column',
-          alignItems:'center', justifyContent:'center', textAlign:'center',
-          padding:'2rem',
+          position: 'relative', zIndex: 1,
+          height: '100%', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+          padding: '1rem',
         }}>
           {/* Breadcrumb */}
-          <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', marginBottom:'1rem' }}>
-            <Link to="/" style={{ color:'rgba(255,255,255,0.5)', fontSize:'0.75rem', letterSpacing:'0.1em', textDecoration:'none' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <Link to="/" style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', letterSpacing: '0.1em', textDecoration: 'none' }}>
               Home
             </Link>
-            <span style={{ color:'rgba(255,255,255,0.3)', fontSize:'0.75rem' }}>/</span>
-            <span style={{ color:'var(--color-gold)', fontSize:'0.75rem', letterSpacing:'0.1em' }}>
+            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>/</span>
+            <span style={{ color: 'var(--color-gold)', fontSize: '0.75rem', letterSpacing: '0.1em' }}>
               {categoryName}
             </span>
           </div>
 
           <motion.h1
-            initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
-            transition={{ duration:0.6 }}
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             style={{
-              fontFamily:'var(--font-serif)',
-              fontSize:'clamp(2rem, 5vw, 3.5rem)',
-              fontWeight:300, color:'white',
-              letterSpacing:'0.04em',
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              fontWeight: 300, color: 'white',
+              letterSpacing: '0.04em',
             }}
           >
             {categoryName}

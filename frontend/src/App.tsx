@@ -64,56 +64,72 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         overflowX: 'hidden',
         position: 'relative',
       }}>
-        {/* Mobile Menu Toggle Button */}
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="admin-mobile-menu-btn"
-          style={{
-            position: 'fixed',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 998,
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            background: 'var(--color-charcoal)',
-            border: 'none',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
+        {/* Mobile Header Bar */}
+        <div className="admin-mobile-header" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '60px',
+          background: 'var(--color-charcoal)',
+          color: 'white',
+          display: 'none',
+          alignItems: 'center',
+          padding: '0 1rem',
+          zIndex: 998,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        }}>
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              padding: '0.5rem',
+            }}
+            aria-label="Open menu"
+          >
+            <Menu size={24} />
+          </button>
+          <span style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.125rem',
+            fontWeight: 500,
+            marginLeft: '0.75rem',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase'
+          }}>
+            Kelebri Admin
+          </span>
+        </div>
 
         {children}
 
         {/* Mobile-only responsive styles */}
         <style>{`
-          /* Desktop - hide mobile menu button, show sidebar margin */
+          /* Desktop - hide mobile header, show sidebar margin */
           @media (min-width: 769px) {
-            .admin-mobile-menu-btn {
+            .admin-mobile-header {
               display: none !important;
             }
             .admin-main-content {
               margin-left: 260px !important;
+              padding-top: 0 !important;
             }
           }
 
-          /* Mobile - show menu button, remove sidebar margin */
+          /* Mobile - show mobile header, remove sidebar margin, offset content */
           @media (max-width: 768px) {
+            .admin-mobile-header {
+              display: flex !important;
+            }
             .admin-main-content {
               margin-left: 0 !important;
-            }
-            .admin-mobile-menu-btn {
-              display: flex !important;
+              padding-top: 60px !important;
             }
           }
         `}</style>
