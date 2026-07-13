@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { connectDB } from './lib/db';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
@@ -47,9 +48,12 @@ app.use((_req, res) => {
 // Error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);
-  console.log(`📋 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+// Connect to MongoDB, then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);
+    console.log(`📋 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+  });
 });
 
 export default app;

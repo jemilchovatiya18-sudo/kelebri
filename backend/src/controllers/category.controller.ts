@@ -1,14 +1,11 @@
 import { Request, Response } from 'express';
-import { categories, generateId } from '../data/mockData';
+import { Category } from '../models/Category.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 
 export const getCategories = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const sortedCategories = [...categories].sort((a, b) => {
-      if (a.type !== b.type) return a.type.localeCompare(b.type);
-      return a.sortOrder - b.sortOrder;
-    });
-    res.json({ success: true, data: sortedCategories });
+    const categories = await Category.find().sort({ type: 1, sortOrder: 1 });
+    res.json({ success: true, data: categories });
   } catch {
     res.status(500).json({ success: false, message: 'Server error' });
   }
@@ -16,7 +13,7 @@ export const getCategories = async (_req: Request, res: Response): Promise<void>
 
 export const getCategoryBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
-    const category = categories.find((c) => c.slug === req.params.slug);
+    const category = await Category.findOne({ slug: req.params.slug });
     if (!category) {
       res.status(404).json({ success: false, message: 'Category not found' });
       return;
@@ -30,27 +27,30 @@ export const getCategoryBySlug = async (req: Request, res: Response): Promise<vo
 export const createCategory = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { name, slug, type, imageUrl, publicId, sortOrder } = req.body;
-    
-    if (categories.some((c) => c.slug === slug)) {
+
+    const existing = await Category.findOne({ slug });
+    if (existing) {
       res.status(409).json({ success: false, message: 'Category slug already exists' });
       return;
     }
 
-    const category = {
-      id: generateId(),
+    const category = new Category({
       name,
       slug,
       type: type || 'JEWELRY',
       imageUrl,
       publicId,
       sortOrder: sortOrder || 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    categories.push(category);
+    });
+
+    await category.save();
     res.status(201).json({ success: true, data: category });
   } catch (error: any) {
+    if (error.code === 11000) {
+      res.status(409).json({ success: false, message: 'Category slug already exists' });
+      return;
+    }
+    console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -58,14 +58,19 @@ export const createCategory = async (req: AuthRequest, res: Response): Promise<v
 export const updateCategory = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const index = categories.findIndex((c) => c.id === id);
-    if (index === -1) {
+
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { ...req.body, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    );
+
+    if (!category) {
       res.status(404).json({ success: false, message: 'Category not found' });
       return;
     }
 
-    categories[index] = { ...categories[index], ...req.body, updatedAt: new Date() };
-    res.json({ success: true, data: categories[index] });
+    res.json({ success: true, data: category });
   } catch {
     res.status(500).json({ success: false, message: 'Server error' });
   }
@@ -74,10 +79,7 @@ export const updateCategory = async (req: AuthRequest, res: Response): Promise<v
 export const deleteCategory = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const index = categories.findIndex((c) => c.id === id);
-    if (index !== -1) {
-      categories.splice(index, 1);
-    }
+    await Category.findByIdAndDelete(id);
     res.json({ success: true, message: 'Category deleted' });
   } catch {
     res.status(500).json({ success: false, message: 'Server error' });

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { admins } from '../data/mockData';
+import { Admin } from '../models/Admin.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
@@ -13,7 +13,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const admin = admins.find((a) => a.email === email);
+    const admin = await Admin.findOne({ email: email.toLowerCase() });
     if (!admin) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
@@ -25,7 +25,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET || 'secret', {
       expiresIn: '7d',
     });
 
@@ -33,17 +33,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       success: true,
       data: {
         token,
-        admin: { id: admin.id, email: admin.email, name: admin.name },
+        admin: { id: admin._id, email: admin.email, name: admin.name },
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const admin = admins.find((a) => a.id === req.adminId);
+    const admin = await Admin.findById(req.adminId).select('-passwordHash');
 
     if (!admin) {
       res.status(404).json({ success: false, message: 'Admin not found' });
@@ -52,7 +53,7 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
 
     res.json({
       success: true,
-      data: { id: admin.id, email: admin.email, name: admin.name, createdAt: admin.createdAt },
+      data: { id: admin._id, email: admin.email, name: admin.name, createdAt: admin.createdAt },
     });
   } catch {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -63,22 +64,20 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<v
   try {
     const { currentPassword, newPassword } = req.body;
 
-    const adminIndex = admins.findIndex((a) => a.id === req.adminId);
-    if (adminIndex === -1) {
+    const admin = await Admin.findById(req.adminId);
+    if (!admin) {
       res.status(404).json({ success: false, message: 'Admin not found' });
       return;
     }
 
-    const admin = admins[adminIndex];
     const isValid = await bcrypt.compare(currentPassword, admin.passwordHash);
     if (!isValid) {
       res.status(400).json({ success: false, message: 'Current password is incorrect' });
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-    admins[adminIndex].passwordHash = hashedPassword;
-    admins[adminIndex].updatedAt = new Date();
+    admin.passwordHash = await bcrypt.hash(newPassword, 12);
+    await admin.save();
 
     res.json({ success: true, message: 'Password changed successfully' });
   } catch {

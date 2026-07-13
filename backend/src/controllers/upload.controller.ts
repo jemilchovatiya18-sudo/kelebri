@@ -20,7 +20,7 @@ export const upload = multer({
 export const uploadImage = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     console.log('📤 Upload request received');
-    console.log('📤 User:', req.user?.id);
+    console.log('📤 Admin:', req.adminId);
     console.log('📤 File:', req.file ? `${req.file.originalname} (${req.file.size} bytes)` : 'NO FILE');
     
     if (!req.file) {
