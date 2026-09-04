@@ -38,6 +38,9 @@ const formatProduct = (p) => {
 // Helper to resolve a valid Category ObjectId from any categoryId input
 const resolveCategoryObjectId = async (inputCatId) => {
     await (0, db_1.connectDB)();
+    if (mongoose_1.default.connection.readyState !== 1) {
+        throw new Error('Database unavailable');
+    }
     // If already a valid Mongo ObjectId, verify if document exists
     if (mongoose_1.default.Types.ObjectId.isValid(inputCatId)) {
         const existing = await Category_model_1.Category.findById(inputCatId);

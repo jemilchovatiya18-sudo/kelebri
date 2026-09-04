@@ -39,6 +39,10 @@ const formatProduct = (p: any) => {
 const resolveCategoryObjectId = async (inputCatId: string): Promise<mongoose.Types.ObjectId> => {
   await connectDB();
 
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error('Database unavailable');
+  }
+
   // If already a valid Mongo ObjectId, verify if document exists
   if (mongoose.Types.ObjectId.isValid(inputCatId)) {
     const existing = await Category.findById(inputCatId);

@@ -7,8 +7,10 @@ exports.deleteCategory = exports.updateCategory = exports.createCategory = expor
 const mongoose_1 = __importDefault(require("mongoose"));
 const Category_model_1 = require("../models/Category.model");
 const mockData_1 = require("../data/mockData");
+const db_1 = require("../lib/db");
 const getCategories = async (_req, res) => {
     try {
+        await (0, db_1.connectDB)();
         if (mongoose_1.default.connection.readyState === 1) {
             const cats = await Category_model_1.Category.find().sort({ type: 1, sortOrder: 1 });
             if (cats && cats.length > 0) {

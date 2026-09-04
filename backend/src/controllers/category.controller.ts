@@ -3,9 +3,11 @@ import mongoose from 'mongoose';
 import { Category } from '../models/Category.model';
 import { categories as mockCategories } from '../data/mockData';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { connectDB } from '../lib/db';
 
 export const getCategories = async (_req: Request, res: Response): Promise<void> => {
   try {
+    await connectDB();
     if (mongoose.connection.readyState === 1) {
       const cats = await Category.find().sort({ type: 1, sortOrder: 1 });
       if (cats && cats.length > 0) {

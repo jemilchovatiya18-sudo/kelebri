@@ -33,8 +33,20 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
 // Health check
-app.get('/api/health', (_req, res) => {
-    res.json({ success: true, message: 'Kelebri API is running ✨', timestamp: new Date() });
+app.get('/api/health', async (_req, res) => {
+    try {
+        await (0, db_1.connectDB)();
+    }
+    catch {
+        // connection errors are reported via getDbStatus below
+    }
+    const db = (0, db_1.getDbStatus)();
+    res.status(db.connected ? 200 : 503).json({
+        success: db.connected,
+        message: db.connected ? 'Kelebri API is running ✨' : 'Kelebri API is running but database is unavailable',
+        timestamp: new Date(),
+        database: db,
+    });
 });
 // Routes
 app.use('/api/auth', auth_routes_1.default);

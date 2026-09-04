@@ -83,9 +83,10 @@ const AdminSidebar = ({ isOpen = false, onClose }: AdminSidebarProps) => {
           borderRight: '1px solid rgba(255,255,255,0.1)',
           zIndex: 1000,
           transition: 'transform 0.3s ease',
-        }}>
-      {/* Brand */}
-      <div style={{
+        }}
+      >
+        {/* Brand */}
+        <div style={{
         padding: '2rem 1.5rem',
         borderBottom: '1px solid rgba(255,255,255,0.1)',
         display: 'flex',

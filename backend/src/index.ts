@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { connectDB } from './lib/db';
+import { connectDB, getDbStatus } from './lib/db';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
@@ -34,8 +34,21 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check
-app.get('/api/health', (_req, res) => {
-  res.json({ success: true, message: 'Kelebri API is running ✨', timestamp: new Date() });
+app.get('/api/health', async (_req, res) => {
+  try {
+    await connectDB();
+  } catch {
+    // connection errors are reported via getDbStatus below
+  }
+
+  const db = getDbStatus();
+
+  res.status(db.connected ? 200 : 503).json({
+    success: db.connected,
+    message: db.connected ? 'Kelebri API is running ✨' : 'Kelebri API is running but database is unavailable',
+    timestamp: new Date(),
+    database: db,
+  });
 });
 
 // Routes
