@@ -5,6 +5,7 @@ console.log('\n🔍 Checking Kelebri Backend Configuration...\n');
 
 const checks = [
   { name: 'PORT', value: process.env.PORT, required: false },
+  { name: 'MONGODB_URI', value: process.env.MONGODB_URI, required: true },
   { name: 'JWT_SECRET', value: process.env.JWT_SECRET, required: true },
   { name: 'CLOUDINARY_CLOUD_NAME', value: process.env.CLOUDINARY_CLOUD_NAME, required: true },
   { name: 'CLOUDINARY_API_KEY', value: process.env.CLOUDINARY_API_KEY, required: true },
