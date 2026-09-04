@@ -8,7 +8,7 @@ interface WhatsAppButtonProps {
 }
 
 const WhatsAppButton = ({ productName, sku, slug, fullWidth = true }: WhatsAppButtonProps) => {
-  const phone = import.meta.env.VITE_WHATSAPP_NUMBER || '+919876543210';
+  const phone = import.meta.env.VITE_WHATSAPP_NUMBER || '+919054395295';
   const productLink = `${window.location.origin}/products/${slug}`;
   const url = getWhatsAppUrl(phone, productName, sku, productLink);
 
