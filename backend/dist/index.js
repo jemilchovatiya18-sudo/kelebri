@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const db_1 = require("./lib/db");
 const errorHandler_1 = require("./middleware/errorHandler");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
@@ -34,18 +35,26 @@ app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
 // Health check
 app.get('/api/health', async (_req, res) => {
+    let dbConnected = false;
+    let dbError = null;
     try {
         await (0, db_1.connectDB)();
+        dbConnected = mongoose_1.default.connection.readyState === 1;
     }
-    catch {
-        // connection errors are reported via getDbStatus below
+    catch (error) {
+        dbError = error.message;
     }
     const db = (0, db_1.getDbStatus)();
-    res.status(db.connected ? 200 : 503).json({
-        success: db.connected,
-        message: db.connected ? 'Kelebri API is running ✨' : 'Kelebri API is running but database is unavailable',
+    res.status(dbConnected ? 200 : 503).json({
+        success: dbConnected,
+        message: dbConnected
+            ? 'Kelebri API is running ✨'
+            : 'Kelebri API is running but database is unavailable',
         timestamp: new Date(),
-        database: db,
+        database: {
+            ...db,
+            error: dbError || undefined,
+        },
     });
 });
 // Routes
@@ -59,8 +68,13 @@ app.use((_req, res) => {
 });
 // Error handler
 app.use(errorHandler_1.errorHandler);
-// Trigger MongoDB connection non-blockingly
-(0, db_1.connectDB)().catch((err) => console.warn('DB connect warning:', err));
+// Trigger MongoDB connection non-blockingly (pre-warm for Vercel)
+if (process.env.VERCEL) {
+    (0, db_1.connectDB)().catch((err) => console.error('❌ DB connection failed:', err));
+}
+else {
+    (0, db_1.connectDB)().catch((err) => console.warn('DB connect warning:', err));
+}
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);

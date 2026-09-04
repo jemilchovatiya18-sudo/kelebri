@@ -90,35 +90,64 @@ const getDbStatus = () => ({
 });
 exports.getDbStatus = getDbStatus;
 const connectDB = async () => {
-    if ((0, exports.isDbConnected)())
+    // If already connected, return immediately
+    if (mongoose_1.default.connection.readyState === 1) {
         return;
+    }
+    // Use global cache for Vercel serverless environment
     const cache = global.__mongooseCache ?? { conn: null, promise: null };
     global.__mongooseCache = cache;
-    if (cache.conn)
+    // If connection exists, return
+    if (cache.conn) {
         return;
-    if (!cache.promise) {
-        cache.promise = mongoose_1.default
-            .connect(MONGODB_URI, {
-            serverSelectionTimeoutMS: 10000,
-            bufferCommands: false,
-        })
-            .then(async (connection) => {
-            console.log(`✅ MongoDB connected: ${connection.connection.host}/${connection.connection.name}`);
+    }
+    // If connection promise exists, wait for it
+    if (cache.promise) {
+        try {
+            cache.conn = await cache.promise;
+            return;
+        }
+        catch (error) {
+            // If failed, clear cache and retry
+            cache.promise = null;
+            cache.conn = null;
+        }
+    }
+    // Create new connection promise
+    cache.promise = mongoose_1.default
+        .connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 30000, // Increased from 10000 for cold starts
+        socketTimeoutMS: 45000, // Added for slow networks
+        connectTimeoutMS: 30000, // Added for initial connection
+        bufferCommands: false,
+        maxPoolSize: 10, // Connection pooling for performance
+        minPoolSize: 2, // Minimum connections to maintain
+    })
+        .then(async (connection) => {
+        console.log(`✅ MongoDB connected: ${connection.connection.host}/${connection.connection.name}`);
+        // Run seed operations AFTER connection confirmed
+        try {
             await (0, exports.ensureAdminsExist)();
             await (0, exports.ensureCategoriesExist)();
-            return connection;
-        })
-            .catch((error) => {
-            cache.promise = null;
-            console.warn('⚠️ MongoDB connection warning:', error.message);
-            throw error;
-        });
-    }
+        }
+        catch (seedError) {
+            console.warn('⚠️ Seeding warning:', seedError);
+        }
+        return connection;
+    })
+        .catch((error) => {
+        cache.promise = null;
+        cache.conn = null;
+        console.error('❌ MongoDB connection error:', error.message);
+        throw error;
+    });
     try {
         cache.conn = await cache.promise;
     }
-    catch {
+    catch (error) {
         cache.conn = null;
+        cache.promise = null;
+        throw error;
     }
 };
 exports.connectDB = connectDB;

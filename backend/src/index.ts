@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
 import { connectDB, getDbStatus } from './lib/db';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
@@ -35,19 +36,28 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check
 app.get('/api/health', async (_req, res) => {
+  let dbConnected = false;
+  let dbError: string | null = null;
+
   try {
     await connectDB();
-  } catch {
-    // connection errors are reported via getDbStatus below
+    dbConnected = mongoose.connection.readyState === 1;
+  } catch (error) {
+    dbError = (error as Error).message;
   }
 
   const db = getDbStatus();
 
-  res.status(db.connected ? 200 : 503).json({
-    success: db.connected,
-    message: db.connected ? 'Kelebri API is running ✨' : 'Kelebri API is running but database is unavailable',
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    message: dbConnected 
+      ? 'Kelebri API is running ✨' 
+      : 'Kelebri API is running but database is unavailable',
     timestamp: new Date(),
-    database: db,
+    database: {
+      ...db,
+      error: dbError || undefined,
+    },
   });
 });
 
@@ -65,8 +75,12 @@ app.use((_req, res) => {
 // Error handler
 app.use(errorHandler);
 
-// Trigger MongoDB connection non-blockingly
-connectDB().catch((err) => console.warn('DB connect warning:', err));
+// Trigger MongoDB connection non-blockingly (pre-warm for Vercel)
+if (process.env.VERCEL) {
+  connectDB().catch((err) => console.error('❌ DB connection failed:', err));
+} else {
+  connectDB().catch((err) => console.warn('DB connect warning:', err));
+}
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
