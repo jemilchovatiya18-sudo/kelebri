@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import type { Variants, Transition } from 'framer-motion';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
@@ -12,10 +12,10 @@ import ProductCard from '../components/ui/ProductCard';
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.7, delay: i * 0.1, ease: 'easeOut' as const },
-  }),
+  visible: (i = 0) => {
+    const transition: Transition = { duration: 0.7, delay: i * 0.1, ease: 'easeOut' };
+    return { opacity: 1, y: 0, transition };
+  },
 };
 
 const Home = () => {

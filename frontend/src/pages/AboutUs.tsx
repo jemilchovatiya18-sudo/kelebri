@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import type { Variants, Transition } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay: i * 0.12, ease: 'easeOut' as const },
-  }),
+  visible: (i = 0) => {
+    const transition: Transition = { duration: 0.6, delay: i * 0.12, ease: 'easeOut' };
+    return { opacity: 1, y: 0, transition };
+  },
 };
 
 const AboutUs = () => (

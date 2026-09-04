@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import type { Variants, Transition } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -42,20 +42,20 @@ const headerContainer: Variants = {
 
 const fadeSlideUp: Variants = {
   hidden:  { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
 };
 
 const fadeIn: Variants = {
   hidden:  { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
 const cardFade: Variants = {
   hidden:  { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] },
-  }),
+  visible: (i: number) => {
+    const transition: Transition = { duration: 0.5, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] };
+    return { opacity: 1, y: 0, transition };
+  },
 };
 
 /* ─── Component ──────────────────────────────────────────── */

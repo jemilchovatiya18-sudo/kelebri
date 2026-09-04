@@ -93,7 +93,7 @@ const AdminProductEdit = () => {
   }, [productData, isNew]);
 
   const mutation = useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: (data: ProductForm & { images?: ImageObject[] }) => {
       if (isNew) {
         return api.post('/products', data);
       } else {
@@ -106,7 +106,7 @@ const AdminProductEdit = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] as const });
       navigate('/admin/products');
     },
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { message?: string } } }) => {
       toast.error(error.response?.data?.message || 'Something went wrong');
     },
   });
