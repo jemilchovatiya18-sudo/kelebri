@@ -251,12 +251,12 @@ const Home = () => {
               gap:'1.5rem',
             }}>
             {(jewelryCategories.length > 0 ? jewelryCategories : [
-              { id:'1', name:'Rings', slug:'rings', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
-              { id:'2', name:'Earrings', slug:'earrings', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
-              { id:'3', name:'Pendants', slug:'pendants', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:3, createdAt:'', updatedAt:'' },
-              { id:'4', name:'Bracelets & Bangles', slug:'bracelets-bangles', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
-              { id:'5', name:'Necklaces', slug:'necklaces', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:5, createdAt:'', updatedAt:'' },
-              { id:'6', name:'Tennis Collection', slug:'tennis-collection', type:'JEWELRY' as const, imageUrl:null, publicId:null, sortOrder:6, createdAt:'', updatedAt:'' },
+              { id:'1', name:'Rings', slug:'rings', type:'JEWELRY' as const, imageUrl:'/images/categories/rings.jpg', publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
+              { id:'2', name:'Earrings', slug:'earrings', type:'JEWELRY' as const, imageUrl:'/images/categories/earrings.jpg', publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
+              { id:'3', name:'Pendants', slug:'pendants', type:'JEWELRY' as const, imageUrl:'/images/categories/pendants.jpg', publicId:null, sortOrder:3, createdAt:'', updatedAt:'' },
+              { id:'4', name:'Bracelets & Bangles', slug:'bracelets-bangles', type:'JEWELRY' as const, imageUrl:'/images/categories/bracelets.jpg', publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
+              { id:'5', name:'Necklaces', slug:'necklaces', type:'JEWELRY' as const, imageUrl:'/images/categories/necklace.jpg', publicId:null, sortOrder:5, createdAt:'', updatedAt:'' },
+              { id:'6', name:'Tennis Collection', slug:'tennis-collection', type:'JEWELRY' as const, imageUrl:'/images/categories/tennis.jpg', publicId:null, sortOrder:6, createdAt:'', updatedAt:'' },
             ]).map((cat, i) => (
               <motion.div
                 key={cat.id}
@@ -369,10 +369,10 @@ const Home = () => {
               gap:'1.5rem',
             }}>
             {(diamondCategories.length > 0 ? diamondCategories : [
-              { id:'7', name:'Lab Grown Diamonds', slug:'lab-grown-diamonds', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
-              { id:'8', name:'Natural Diamonds', slug:'natural-diamonds', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
-              { id:'9', name:'Moissanite', slug:'moissanite', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:3, createdAt:'', updatedAt:'' },
-              { id:'10', name:'Custom Jewelry', slug:'custom-jewelry', type:'DIAMOND' as const, imageUrl:null, publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
+              { id:'7', name:'Lab Grown Diamonds', slug:'lab-grown-diamonds', type:'DIAMOND' as const, imageUrl:'/images/categories/lab-grown.jpg', publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
+              { id:'8', name:'Natural Diamonds', slug:'natural-diamonds', type:'DIAMOND' as const, imageUrl:'/images/categories/natural.jpg', publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
+              { id:'9', name:'Moissanite', slug:'moissanite', type:'DIAMOND' as const, imageUrl:'/images/categories/lab-grown.jpg', publicId:null, sortOrder:3, createdAt:'', updatedAt:'' },
+              { id:'10', name:'Custom Jewelry', slug:'custom-jewelry', type:'DIAMOND' as const, imageUrl:'/images/categories/necklace.jpg', publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
             ]).map((cat, i) => (
               <motion.div
                 key={cat.id}

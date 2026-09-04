@@ -47,12 +47,13 @@ app.use((_req, res) => {
 });
 // Error handler
 app.use(errorHandler_1.errorHandler);
-// Connect to MongoDB, then start server
-(0, db_1.connectDB)().then(() => {
+// Trigger MongoDB connection non-blockingly
+(0, db_1.connectDB)().catch((err) => console.warn('DB connect warning:', err));
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);
         console.log(`📋 Environment: ${process.env.NODE_ENV || 'development'}\n`);
     });
-});
+}
 exports.default = app;
 //# sourceMappingURL=index.js.map

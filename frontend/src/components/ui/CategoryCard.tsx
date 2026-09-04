@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom';
 import type { Category } from '../../types';
 import { ArrowRight } from 'lucide-react';
 
-// Fallback luxury images for categories (Unsplash)
+// Category images
 const FALLBACK_IMAGES: Record<string, string> = {
-  rings: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80',
-  earrings: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&q=80',
-  pendants: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&q=80',
-  'bracelets-bangles': 'https://images.unsplash.com/photo-1573408301185-9519f94f8d14?w=600&q=80',
-  necklaces: 'https://images.unsplash.com/photo-1518049362265-d5b2a6467637?w=600&q=80',
-  'tennis-collection': 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80',
-  'lab-grown-diamonds': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=80',
-  'natural-diamonds': 'https://images.unsplash.com/photo-1571844307880-751c6d86f3f3?w=600&q=80',
-  moissanite: 'https://images.unsplash.com/photo-1583937443986-a6ba2ceef875?w=600&q=80',
-  'custom-jewelry': 'https://images.unsplash.com/photo-1527685609591-44b0aef2400b?w=600&q=80',
+  rings: '/images/categories/rings.jpg',
+  earrings: '/images/categories/earrings.jpg',
+  pendants: '/images/categories/pendants.jpg',
+  'bracelets-bangles': '/images/categories/bracelets.jpg',
+  necklaces: '/images/categories/necklace.jpg',
+  'tennis-collection': '/images/categories/tennis.jpg',
+  'lab-grown-diamonds': '/images/categories/lab-grown.jpg',
+  'natural-diamonds': '/images/categories/natural.jpg',
+  moissanite: '/images/categories/lab-grown.jpg',
+  'custom-jewelry': '/images/categories/necklace.jpg',
 };
 
 interface CategoryCardProps {

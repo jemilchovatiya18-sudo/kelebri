@@ -20,6 +20,12 @@ const AdminProducts = () => {
     placeholderData: (previousData) => previousData,
   });
 
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => api.get('/categories').then(r => r.data.data),
+  });
+  const categoriesList = categoriesData || [];
+
   const products: Product[] = data?.data || [];
   const meta = data?.meta;
 
@@ -149,7 +155,12 @@ const AdminProducts = () => {
                           fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
                           color: 'var(--color-charcoal)',
                         }}>
-                          {product.category?.name}
+                          {
+                            product.category?.name ||
+                            (typeof product.categoryId === 'object' ? (product.categoryId as any)?.name : null) ||
+                            categoriesList.find((c: any) => (c.id || c._id) === (typeof product.categoryId === 'string' ? product.categoryId : ''))?.name ||
+                            'Uncategorized'
+                          }
                         </span>
                       </td>
                       <td style={{ padding: '1rem 1.5rem', fontFamily: 'var(--font-sans)', fontSize: '0.875rem', color: 'var(--color-charcoal)' }}>

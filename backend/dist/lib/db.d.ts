@@ -1,3 +1,4 @@
+export declare const ensureCategoriesExist: () => Promise<void>;
 export declare const ensureAdminsExist: () => Promise<void>;
 export declare const connectDB: () => Promise<void>;
 export default connectDB;

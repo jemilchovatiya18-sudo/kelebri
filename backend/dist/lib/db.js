@@ -3,13 +3,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectDB = exports.ensureAdminsExist = void 0;
+exports.connectDB = exports.ensureAdminsExist = exports.ensureCategoriesExist = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const Admin_model_1 = require("../models/Admin.model");
+const Category_model_1 = require("../models/Category.model");
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/kelebri_db';
+const defaultCategories = [
+    { name: 'Rings', slug: 'rings', type: 'JEWELRY', imageUrl: '/images/categories/rings.jpg', sortOrder: 1 },
+    { name: 'Earrings', slug: 'earrings', type: 'JEWELRY', imageUrl: '/images/categories/earrings.jpg', sortOrder: 2 },
+    { name: 'Pendants', slug: 'pendants', type: 'JEWELRY', imageUrl: '/images/categories/pendants.jpg', sortOrder: 3 },
+    { name: 'Bracelets & Bangles', slug: 'bracelets-bangles', type: 'JEWELRY', imageUrl: '/images/categories/bracelets.jpg', sortOrder: 4 },
+    { name: 'Necklaces', slug: 'necklaces', type: 'JEWELRY', imageUrl: '/images/categories/necklace.jpg', sortOrder: 5 },
+    { name: 'Tennis Collection', slug: 'tennis-collection', type: 'JEWELRY', imageUrl: '/images/categories/tennis.jpg', sortOrder: 6 },
+    { name: 'Lab Grown Diamonds', slug: 'lab-grown-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 7 },
+    { name: 'Natural Diamonds', slug: 'natural-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/natural.jpg', sortOrder: 8 },
+    { name: 'Moissanite', slug: 'moissanite', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 9 },
+    { name: 'Custom Jewelry', slug: 'custom-jewelry', type: 'CUSTOM', imageUrl: '/images/categories/necklace.jpg', sortOrder: 10 },
+];
+const ensureCategoriesExist = async () => {
+    try {
+        if (mongoose_1.default.connection.readyState !== 1)
+            return;
+        for (const cat of defaultCategories) {
+            const exists = await Category_model_1.Category.findOne({ slug: cat.slug });
+            if (!exists) {
+                await Category_model_1.Category.create(cat);
+            }
+        }
+    }
+    catch (error) {
+        console.error('⚠️ Category auto-seeding warning:', error);
+    }
+};
+exports.ensureCategoriesExist = ensureCategoriesExist;
 const ensureAdminsExist = async () => {
     try {
+        if (mongoose_1.default.connection.readyState !== 1)
+            return;
         // 1. Primary admin account
         const defaultAdmin = await Admin_model_1.Admin.findOne({ email: 'admin@kelebri.com' });
         if (!defaultAdmin) {
@@ -37,14 +68,26 @@ const ensureAdminsExist = async () => {
     }
 };
 exports.ensureAdminsExist = ensureAdminsExist;
+let isConnecting = false;
 const connectDB = async () => {
+    if (mongoose_1.default.connection.readyState === 1)
+        return;
+    if (isConnecting)
+        return;
+    isConnecting = true;
     try {
-        await mongoose_1.default.connect(MONGODB_URI);
+        await mongoose_1.default.connect(MONGODB_URI, {
+            serverSelectionTimeoutMS: 10000,
+        });
         console.log(`✅ MongoDB connected: ${mongoose_1.default.connection.host}`);
         await (0, exports.ensureAdminsExist)();
+        await (0, exports.ensureCategoriesExist)();
     }
     catch (error) {
-        console.error('❌ MongoDB connection error:', error);
+        console.warn('⚠️ MongoDB connection warning:', error.message);
+    }
+    finally {
+        isConnecting = false;
     }
 };
 exports.connectDB = connectDB;

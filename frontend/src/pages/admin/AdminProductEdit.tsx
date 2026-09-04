@@ -190,7 +190,10 @@ const AdminProductEdit = () => {
                 <label className="admin-label">Category *</label>
                 <select required name="categoryId" value={formData.categoryId} onChange={handleChange} className="luxury-input" style={{ borderRadius: '6px' }}>
                   <option value="">Select Category</option>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {categories.map(c => {
+                    const catId = c.id || (c as any)._id;
+                    return <option key={catId} value={catId}>{c.name}</option>;
+                  })}
                 </select>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
@@ -278,6 +281,63 @@ const AdminProductEdit = () => {
                 Mark as Sold Out
               </label>
             </div>
+          </div>
+
+          {/* Bottom Save Action Bar */}
+          <div style={{
+            background: 'white',
+            padding: '1.5rem 2rem',
+            borderRadius: '12px',
+            border: '1px solid var(--color-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--shadow-card)'
+          }}>
+            <Link
+              to="/admin/products"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 1.5rem',
+                background: 'white',
+                border: '1px solid var(--color-border)',
+                borderRadius: '6px',
+                color: 'var(--color-charcoal)',
+                textDecoration: 'none',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.875rem',
+                fontWeight: 500
+              }}
+            >
+              Cancel
+            </Link>
+
+            <button
+              type="submit"
+              disabled={mutation.status === 'pending'}
+              className="btn-luxury"
+              style={{
+                borderRadius: '6px',
+                padding: '0.875rem 2.5rem',
+                fontSize: '1rem',
+                fontWeight: 500,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.625rem'
+              }}
+            >
+              {mutation.status === 'pending' ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" /> Saving Product...
+                </>
+              ) : (
+                <>
+                  <Save size={20} /> {isNew ? 'Save Product' : 'Update Product'}
+                </>
+              )}
+            </button>
           </div>
         </form>
       </div>
