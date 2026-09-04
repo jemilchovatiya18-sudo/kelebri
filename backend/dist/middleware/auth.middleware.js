@@ -13,7 +13,7 @@ const authenticate = (req, res, next) => {
     }
     const token = authHeader.split(' ')[1];
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'secret');
         req.adminId = decoded.adminId;
         next();
     }

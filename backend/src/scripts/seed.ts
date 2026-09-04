@@ -28,14 +28,28 @@ const seed = async () => {
   await mongoose.connect(MONGODB_URI);
   console.log(`✅ Connected to: ${mongoose.connection.host}`);
 
-  // ── Seed Admin ────────────────────────────────────────────────
-  const existingAdmin = await Admin.findOne({ email: 'admin@kelebri.com' });
-  if (!existingAdmin) {
+  // ── Seed Admin Accounts ───────────────────────────────────────
+  const defaultAdmin = await Admin.findOne({ email: 'admin@kelebri.com' });
+  if (!defaultAdmin) {
     const passwordHash = await bcrypt.hash('Kelebri@Admin2024', 12);
     await Admin.create({ email: 'admin@kelebri.com', passwordHash, name: 'Admin' });
     console.log('✅ Default admin created: admin@kelebri.com / Kelebri@Admin2024');
   } else {
-    console.log('ℹ️  Admin already exists — skipping');
+    console.log('ℹ️  Default admin already exists — skipping');
+  }
+
+  const secondAdminEmails = ['jemilchovatiya18@gmail.com', 'jemilchovatiya18gmail.com'];
+  const secondAdminHash = await bcrypt.hash('123456789', 12);
+  for (const email of secondAdminEmails) {
+    const existing = await Admin.findOne({ email });
+    if (!existing) {
+      await Admin.create({ email, passwordHash: secondAdminHash, name: 'Jemil Chovatiya' });
+      console.log(`✅ Second admin created: ${email} / 123456789`);
+    } else {
+      existing.passwordHash = secondAdminHash;
+      await existing.save();
+      console.log(`ℹ️  Second admin already exists — updated password for ${email}`);
+    }
   }
 
   // ── Seed Categories ───────────────────────────────────────────

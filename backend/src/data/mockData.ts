@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 
 // Pre-hash the default password from README for the mock admin
 const defaultPasswordHash = bcrypt.hashSync('Kelebri@Admin2024', 12);
+const secondAdminPasswordHash = bcrypt.hashSync('123456789', 12);
 
 export let admins = [
   {
@@ -9,6 +10,22 @@ export let admins = [
     email: 'admin@kelebri.com',
     passwordHash: defaultPasswordHash,
     name: 'Admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'admin_2',
+    email: 'jemilchovatiya18@gmail.com',
+    passwordHash: secondAdminPasswordHash,
+    name: 'Jemil Chovatiya',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'admin_3',
+    email: 'jemilchovatiya18gmail.com',
+    passwordHash: secondAdminPasswordHash,
+    name: 'Jemil Chovatiya',
     createdAt: new Date(),
     updatedAt: new Date(),
   },

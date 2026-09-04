@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
+const db_1 = require("./lib/db");
 const errorHandler_1 = require("./middleware/errorHandler");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const category_routes_1 = __importDefault(require("./routes/category.routes"));
@@ -41,9 +42,12 @@ app.use((_req, res) => {
 });
 // Error handler
 app.use(errorHandler_1.errorHandler);
-app.listen(PORT, () => {
-    console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);
-    console.log(`📋 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+// Connect to MongoDB, then start server
+(0, db_1.connectDB)().then(() => {
+    app.listen(PORT, () => {
+        console.log(`\n✨ Kelebri API running on http://localhost:${PORT}`);
+        console.log(`📋 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+    });
 });
 exports.default = app;
 //# sourceMappingURL=index.js.map

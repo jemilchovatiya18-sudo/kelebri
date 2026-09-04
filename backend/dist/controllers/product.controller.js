@@ -1,48 +1,65 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdminStats = exports.deleteProductImage = exports.addProductImage = exports.toggleProductFlag = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProductBySlug = exports.getProducts = void 0;
-const mockData_1 = require("../data/mockData");
-const populateProduct = (product) => {
-    return {
-        ...product,
-        category: mockData_1.categories.find((c) => c.id === product.categoryId) || null,
-    };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAdminStats = exports.deleteProductImage = exports.addProductImage = exports.toggleProductFlag = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProductBySlug = exports.getProductById = exports.getProducts = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+const Product_model_1 = require("../models/Product.model");
+const Category_model_1 = require("../models/Category.model");
+// Helper to build a slug from a product name
+const buildSlug = (name) => name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 const getProducts = async (req, res) => {
     try {
         const { category, diamondType, search, bestSeller, hero, page = '1', limit = '20', } = req.query;
-        let filtered = mockData_1.products.map(populateProduct);
+        const filter = {};
+        if (diamondType)
+            filter.diamondType = String(diamondType);
+        if (bestSeller === 'true')
+            filter.isBestSeller = true;
+        if (hero === 'true')
+            filter.isHeroProduct = true;
+        // Filter by category slug — look up the category ID first
         if (category) {
-            filtered = filtered.filter((p) => p.category?.slug === String(category));
+            const cat = await Category_model_1.Category.findOne({ slug: String(category) });
+            if (cat)
+                filter.categoryId = cat._id;
+            else
+                filter.categoryId = null; // no match → return empty
         }
-        if (diamondType) {
-            filtered = filtered.filter((p) => p.diamondType === String(diamondType));
-        }
-        if (bestSeller === 'true') {
-            filtered = filtered.filter((p) => p.isBestSeller);
-        }
-        if (hero === 'true') {
-            filtered = filtered.filter((p) => p.isHeroProduct);
-        }
+        // Full-text search
         if (search) {
-            const s = String(search).toLowerCase();
-            filtered = filtered.filter((p) => {
-                return (p.name.toLowerCase().includes(s) ||
-                    p.sku.toLowerCase().includes(s) ||
-                    (p.description && p.description.toLowerCase().includes(s)) ||
-                    (p.category && p.category.name.toLowerCase().includes(s)) ||
-                    p.metalType.toLowerCase() === s);
-            });
+            const s = String(search);
+            filter.$or = [
+                { name: { $regex: s, $options: 'i' } },
+                { sku: { $regex: s, $options: 'i' } },
+                { description: { $regex: s, $options: 'i' } },
+                { metalType: { $regex: s, $options: 'i' } },
+            ];
         }
-        filtered.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         const pageNum = parseInt(String(page));
         const limitNum = parseInt(String(limit));
         const skip = (pageNum - 1) * limitNum;
-        const paginated = filtered.slice(skip, skip + limitNum);
+        const [products, total] = await Promise.all([
+            Product_model_1.Product.find(filter)
+                .populate('categoryId')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limitNum),
+            Product_model_1.Product.countDocuments(filter),
+        ]);
         res.json({
             success: true,
-            data: paginated,
-            meta: { total: filtered.length, page: pageNum, limit: limitNum, totalPages: Math.ceil(filtered.length / limitNum) },
+            data: products,
+            meta: {
+                total,
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum),
+            },
         });
     }
     catch (error) {
@@ -51,20 +68,40 @@ const getProducts = async (req, res) => {
     }
 };
 exports.getProducts = getProducts;
-const getProductBySlug = async (req, res) => {
+const getProductById = async (req, res) => {
     try {
-        let product = mockData_1.products.find((p) => p.slug === req.params.slug);
+        const paramId = String(req.params.id);
+        if (!mongoose_1.default.Types.ObjectId.isValid(paramId)) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        const product = await Product_model_1.Product.findById(paramId).populate('categoryId');
         if (!product) {
             res.status(404).json({ success: false, message: 'Product not found' });
             return;
         }
-        const populatedProduct = populateProduct(product);
-        // Get related products
-        const related = mockData_1.products
-            .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
-            .slice(0, 4)
-            .map(populateProduct);
-        res.json({ success: true, data: { ...populatedProduct, related } });
+        res.json({ success: true, data: product });
+    }
+    catch {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+exports.getProductById = getProductById;
+const getProductBySlug = async (req, res) => {
+    try {
+        const product = await Product_model_1.Product.findOne({ slug: req.params.slug }).populate('categoryId');
+        if (!product) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        // Get related products from same category
+        const related = await Product_model_1.Product.find({
+            categoryId: product.categoryId,
+            _id: { $ne: product._id },
+        })
+            .populate('categoryId')
+            .limit(4);
+        res.json({ success: true, data: { ...product.toObject(), related } });
     }
     catch {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -74,57 +111,65 @@ exports.getProductBySlug = getProductBySlug;
 const createProduct = async (req, res) => {
     try {
         const { images, ...productData } = req.body;
-        const baseSlug = productData.name
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
+        // Build unique slug
+        const baseSlug = buildSlug(productData.name);
         let slug = baseSlug;
         let counter = 1;
-        while (mockData_1.products.some((p) => p.slug === slug)) {
+        while (await Product_model_1.Product.findOne({ slug })) {
             slug = `${baseSlug}-${counter++}`;
         }
-        if (mockData_1.products.some((p) => p.sku === productData.sku)) {
+        // Check SKU uniqueness
+        const skuExists = await Product_model_1.Product.findOne({ sku: productData.sku });
+        if (skuExists) {
             res.status(409).json({ success: false, message: 'SKU already exists' });
             return;
         }
-        const newProductId = (0, mockData_1.generateId)();
-        const productImages = images ? images.map((img, i) => ({
-            id: (0, mockData_1.generateId)(),
-            productId: newProductId,
-            url: img.url,
-            publicId: img.publicId,
-            isPrimary: i === 0,
-            sortOrder: i,
-            createdAt: new Date(),
-        })) : [];
-        const product = {
-            id: newProductId,
+        const productImages = Array.isArray(images)
+            ? images.map((img, i) => ({
+                url: img.url,
+                publicId: img.publicId,
+                isPrimary: i === 0,
+                sortOrder: i,
+                createdAt: new Date(),
+            }))
+            : [];
+        const product = new Product_model_1.Product({
             ...productData,
             slug,
             images: productImages,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-        mockData_1.products.push(product);
-        res.status(201).json({ success: true, data: populateProduct(product) });
+        });
+        await product.save();
+        await product.populate('categoryId');
+        res.status(201).json({ success: true, data: product });
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('❌ Error creating product:', error);
+        if (error.name === 'ValidationError') {
+            res.status(400).json({ success: false, message: 'Validation error', details: error.errors });
+            return;
+        }
+        if (error.code === 11000) {
+            res.status(409).json({ success: false, message: 'SKU or slug already exists' });
+            return;
+        }
+        res.status(500).json({ success: false, message: error.message || 'Server error' });
     }
 };
 exports.createProduct = createProduct;
 const updateProduct = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { images, ...productData } = req.body;
-        const index = mockData_1.products.findIndex((p) => p.id === id);
-        if (index === -1) {
+        const id = String(req.params.id);
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
             res.status(404).json({ success: false, message: 'Product not found' });
             return;
         }
-        mockData_1.products[index] = { ...mockData_1.products[index], ...productData, updatedAt: new Date() };
-        res.json({ success: true, data: populateProduct(mockData_1.products[index]) });
+        const { images, ...productData } = req.body;
+        const product = await Product_model_1.Product.findByIdAndUpdate(id, { ...productData, updatedAt: new Date() }, { new: true, runValidators: true }).populate('categoryId');
+        if (!product) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        res.json({ success: true, data: product });
     }
     catch {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -133,10 +178,9 @@ const updateProduct = async (req, res) => {
 exports.updateProduct = updateProduct;
 const deleteProduct = async (req, res) => {
     try {
-        const { id } = req.params;
-        const index = mockData_1.products.findIndex((p) => p.id === id);
-        if (index !== -1) {
-            mockData_1.products.splice(index, 1);
+        const id = String(req.params.id);
+        if (mongoose_1.default.Types.ObjectId.isValid(id)) {
+            await Product_model_1.Product.findByIdAndDelete(id);
         }
         res.json({ success: true, message: 'Product deleted' });
     }
@@ -147,20 +191,23 @@ const deleteProduct = async (req, res) => {
 exports.deleteProduct = deleteProduct;
 const toggleProductFlag = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = String(req.params.id);
         const { flag, value } = req.body;
         const allowedFlags = ['isBestSeller', 'isHeroProduct', 'isSoldOut', 'isAvailable', 'showPrice'];
         if (!allowedFlags.includes(flag)) {
             res.status(400).json({ success: false, message: 'Invalid flag' });
             return;
         }
-        const index = mockData_1.products.findIndex((p) => p.id === id);
-        if (index === -1) {
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
             res.status(404).json({ success: false, message: 'Product not found' });
             return;
         }
-        mockData_1.products[index] = { ...mockData_1.products[index], [flag]: value, updatedAt: new Date() };
-        res.json({ success: true, data: populateProduct(mockData_1.products[index]) });
+        const product = await Product_model_1.Product.findByIdAndUpdate(id, { [flag]: value, updatedAt: new Date() }, { new: true }).populate('categoryId');
+        if (!product) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        res.json({ success: true, data: product });
     }
     catch {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -169,27 +216,31 @@ const toggleProductFlag = async (req, res) => {
 exports.toggleProductFlag = toggleProductFlag;
 const addProductImage = async (req, res) => {
     try {
-        const { productId } = req.params;
+        const productId = String(req.params.productId);
         const { url, publicId, isPrimary } = req.body;
-        const product = mockData_1.products.find((p) => p.id === productId);
+        if (!mongoose_1.default.Types.ObjectId.isValid(productId)) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        const product = await Product_model_1.Product.findById(productId);
         if (!product) {
             res.status(404).json({ success: false, message: 'Product not found' });
             return;
         }
         if (isPrimary) {
-            product.images.forEach((img) => img.isPrimary = false);
+            product.images.forEach((img) => { img.isPrimary = false; });
         }
-        const image = {
-            id: (0, mockData_1.generateId)(),
-            productId: String(productId),
+        const newImage = {
             url,
             publicId,
             isPrimary: isPrimary || false,
-            sortOrder: 0,
+            sortOrder: product.images.length,
             createdAt: new Date(),
         };
-        product.images.push(image);
-        res.status(201).json({ success: true, data: image });
+        product.images.push(newImage);
+        await product.save();
+        const addedImage = product.images[product.images.length - 1];
+        res.status(201).json({ success: true, data: addedImage });
     }
     catch {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -198,14 +249,19 @@ const addProductImage = async (req, res) => {
 exports.addProductImage = addProductImage;
 const deleteProductImage = async (req, res) => {
     try {
-        const { productId, imageId } = req.params;
-        const product = mockData_1.products.find((p) => p.images.some((i) => i.id === imageId));
-        if (product) {
-            const imgIndex = product.images.findIndex((i) => i.id === imageId);
-            if (imgIndex !== -1) {
-                product.images.splice(imgIndex, 1);
-            }
+        const productId = String(req.params.productId);
+        const imageId = String(req.params.imageId);
+        if (!mongoose_1.default.Types.ObjectId.isValid(productId)) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
         }
+        const product = await Product_model_1.Product.findById(productId);
+        if (!product) {
+            res.status(404).json({ success: false, message: 'Product not found' });
+            return;
+        }
+        product.images = product.images.filter((img) => img._id.toString() !== imageId);
+        await product.save();
         res.json({ success: true, message: 'Image deleted' });
     }
     catch {
@@ -215,10 +271,12 @@ const deleteProductImage = async (req, res) => {
 exports.deleteProductImage = deleteProductImage;
 const getAdminStats = async (_req, res) => {
     try {
-        const total = mockData_1.products.length;
-        const bestSellers = mockData_1.products.filter((p) => p.isBestSeller).length;
-        const heroProducts = mockData_1.products.filter((p) => p.isHeroProduct).length;
-        const soldOut = mockData_1.products.filter((p) => p.isSoldOut).length;
+        const [total, bestSellers, heroProducts, soldOut] = await Promise.all([
+            Product_model_1.Product.countDocuments(),
+            Product_model_1.Product.countDocuments({ isBestSeller: true }),
+            Product_model_1.Product.countDocuments({ isHeroProduct: true }),
+            Product_model_1.Product.countDocuments({ isSoldOut: true }),
+        ]);
         res.json({
             success: true,
             data: { total, bestSellers, heroProducts, soldOut },
