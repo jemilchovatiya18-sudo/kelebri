@@ -14,12 +14,14 @@ const login = async (req, res) => {
             res.status(400).json({ success: false, message: 'Email and password are required' });
             return;
         }
-        const admin = await Admin_model_1.Admin.findOne({ email: email.toLowerCase() });
+        const cleanEmail = String(email).trim().toLowerCase();
+        const cleanPassword = String(password).trim();
+        const admin = await Admin_model_1.Admin.findOne({ email: cleanEmail });
         if (!admin) {
             res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
         }
-        const isValid = await bcryptjs_1.default.compare(password, admin.passwordHash);
+        const isValid = await bcryptjs_1.default.compare(cleanPassword, admin.passwordHash);
         if (!isValid) {
             res.status(401).json({ success: false, message: 'Invalid credentials' });
             return;
@@ -36,7 +38,7 @@ const login = async (req, res) => {
         });
     }
     catch (error) {
-        console.error(error);
+        console.error('Login error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
@@ -53,7 +55,8 @@ const getMe = async (req, res) => {
             data: { id: admin._id, email: admin.email, name: admin.name, createdAt: admin.createdAt },
         });
     }
-    catch {
+    catch (error) {
+        console.error('getMe error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
@@ -66,16 +69,17 @@ const changePassword = async (req, res) => {
             res.status(404).json({ success: false, message: 'Admin not found' });
             return;
         }
-        const isValid = await bcryptjs_1.default.compare(currentPassword, admin.passwordHash);
+        const isValid = await bcryptjs_1.default.compare(String(currentPassword).trim(), admin.passwordHash);
         if (!isValid) {
             res.status(400).json({ success: false, message: 'Current password is incorrect' });
             return;
         }
-        admin.passwordHash = await bcryptjs_1.default.hash(newPassword, 12);
+        admin.passwordHash = await bcryptjs_1.default.hash(String(newPassword).trim(), 12);
         await admin.save();
         res.json({ success: true, message: 'Password changed successfully' });
     }
-    catch {
+    catch (error) {
+        console.error('changePassword error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };

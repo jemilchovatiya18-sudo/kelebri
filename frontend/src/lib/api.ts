@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+let rawBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+if (!rawBaseUrl.endsWith('/api') && !rawBaseUrl.endsWith('/api/')) {
+  rawBaseUrl = rawBaseUrl.replace(/\/+$/, '') + '/api';
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: rawBaseUrl,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -14,7 +19,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally — clear token and redirect to admin login
+// Handle 401 globally — clear token and redirect to admin login (except when already on login page)
 api.interceptors.response.use(
   (response) => response,
   (error) => {

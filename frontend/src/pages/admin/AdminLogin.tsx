@@ -17,7 +17,11 @@ const AdminLogin = () => {
       toast.success('Welcome back!');
       navigate('/admin');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        'Login failed. Please verify server connection.';
+      toast.error(errorMsg);
     }
   };
 

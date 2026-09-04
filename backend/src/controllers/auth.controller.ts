@@ -13,13 +13,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const admin = await Admin.findOne({ email: email.toLowerCase() });
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanPassword = String(password).trim();
+
+    const admin = await Admin.findOne({ email: cleanEmail });
     if (!admin) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
     }
 
-    const isValid = await bcrypt.compare(password, admin.passwordHash);
+    const isValid = await bcrypt.compare(cleanPassword, admin.passwordHash);
     if (!isValid) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
       return;
@@ -37,7 +40,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -55,7 +58,8 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       success: true,
       data: { id: admin._id, email: admin.email, name: admin.name, createdAt: admin.createdAt },
     });
-  } catch {
+  } catch (error) {
+    console.error('getMe error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -70,17 +74,18 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
 
-    const isValid = await bcrypt.compare(currentPassword, admin.passwordHash);
+    const isValid = await bcrypt.compare(String(currentPassword).trim(), admin.passwordHash);
     if (!isValid) {
       res.status(400).json({ success: false, message: 'Current password is incorrect' });
       return;
     }
 
-    admin.passwordHash = await bcrypt.hash(newPassword, 12);
+    admin.passwordHash = await bcrypt.hash(String(newPassword).trim(), 12);
     await admin.save();
 
     res.json({ success: true, message: 'Password changed successfully' });
-  } catch {
+  } catch (error) {
+    console.error('changePassword error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
