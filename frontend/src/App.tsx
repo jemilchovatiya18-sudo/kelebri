@@ -8,6 +8,7 @@ import { useAuthStore } from './store/authStore';
 // Layouts
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import KelebriStorySection from './components/layout/KelebriStorySection';
 import AdminSidebar from './components/admin/AdminSidebar';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
@@ -19,6 +20,7 @@ import SearchPage from './pages/SearchPage';
 import AboutUs from './pages/AboutUs';
 import Education from './pages/Education';
 import Contact from './pages/Contact';
+import CustomJewellery from './pages/CustomJewellery';
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -47,6 +49,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => (
   <>
     <Navbar />
     <main>{children}</main>
+    <KelebriStorySection />
     <Footer />
   </>
 );
@@ -174,6 +177,7 @@ function App() {
           <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
           <Route path="/education" element={<MainLayout><Education /></MainLayout>} />
           <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
+          <Route path="/custom-jewellery" element={<MainLayout><CustomJewellery /></MainLayout>} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

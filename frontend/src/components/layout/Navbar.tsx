@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, X, Diamond } from 'lucide-react';
+import { Search, User, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 const Navbar = () => {
@@ -70,7 +70,6 @@ const Navbar = () => {
               style={{ display:'flex', flexDirection:'column', alignItems:'center', textDecoration:'none', gap:'2px' }}
             >
               <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-                <Diamond size={16} style={{ color:'var(--color-gold)' }} />
                 <span style={{
                   fontFamily:'var(--font-serif)',
                   fontSize:'1.5rem',
@@ -81,7 +80,6 @@ const Navbar = () => {
                 }}>
                   Kelebri
                 </span>
-                <Diamond size={16} style={{ color:'var(--color-gold)' }} />
               </div>
               <span style={{
                 fontFamily:'var(--font-sans)',

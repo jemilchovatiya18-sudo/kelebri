@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+  import { motion } from 'framer-motion';
 import type { Variants, Transition } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
@@ -24,7 +24,7 @@ const Contact = () => {
       <div style={{ paddingTop:'72px' }}>
         {/* Hero */}
         <section style={{
-          height:'320px', position:'relative', overflow:'hidden',
+          height:'18  0px', position:'relative', overflow:'hidden',
           background:'var(--color-charcoal)',
         }}>
           <div style={{
@@ -75,19 +75,19 @@ const Contact = () => {
                     {
                       icon: <Phone size={20} style={{ color:'var(--color-gold)' }} />,
                       label:'Phone',
-                      value:'+91 98765 43210',
+                      value:'+91 90 81000 301',
                       href:'tel:+919876543210',
                     },
                     {
                       icon: <Mail size={20} style={{ color:'var(--color-gold)' }} />,
                       label:'Email',
-                      value:'info@kelebri.com',
+                      value:'kelebrijewels@gmail.com',
                       href:'mailto:info@kelebri.com',
                     },
                     {
                       icon: <MapPin size={20} style={{ color:'var(--color-gold)' }} />,
                       label:'Showroom',
-                      value:'Your Showroom Address, City, State – 000000',
+                      value:'G-8, Rajhans Tower, Mini Bazar, Varachha Road, Surat-395006',
                       href:'https://maps.google.com',
                     },
                     {

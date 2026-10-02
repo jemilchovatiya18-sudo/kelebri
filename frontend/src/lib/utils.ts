@@ -1,3 +1,7 @@
+/** Kelebri business WhatsApp — set VITE_WHATSAPP_NUMBER in env (see frontend/.env.example). */
+export const KELEBRI_WHATSAPP_NUMBER =
+  import.meta.env.VITE_WHATSAPP_NUMBER || '';
+
 // WhatsApp utility
 export const getWhatsAppUrl = (
   phone: string,

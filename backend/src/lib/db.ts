@@ -37,10 +37,11 @@ const defaultCategories: Array<{ name: string; slug: string; type: CategoryType;
   { name: 'Bracelets & Bangles', slug: 'bracelets-bangles', type: 'JEWELRY', imageUrl: '/images/categories/bracelets.jpg', sortOrder: 4 },
   { name: 'Necklaces', slug: 'necklaces', type: 'JEWELRY', imageUrl: '/images/categories/necklace.jpg', sortOrder: 5 },
   { name: 'Tennis Collection', slug: 'tennis-collection', type: 'JEWELRY', imageUrl: '/images/categories/tennis.jpg', sortOrder: 6 },
-  { name: 'Lab Grown Diamonds', slug: 'lab-grown-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 7 },
-  { name: 'Natural Diamonds', slug: 'natural-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/natural.jpg', sortOrder: 8 },
-  { name: 'Moissanite', slug: 'moissanite', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 9 },
-  { name: 'Custom Jewelry', slug: 'custom-jewelry', type: 'CUSTOM', imageUrl: '/images/categories/necklace.jpg', sortOrder: 10 },
+  { name: 'Jewellery Sets', slug: 'jewellery-sets', type: 'JEWELRY', imageUrl: '/jewellery sets.jpg', sortOrder: 7 },
+  { name: 'Lab Grown Diamonds', slug: 'lab-grown-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 8 },
+  { name: 'Natural Diamonds', slug: 'natural-diamonds', type: 'DIAMOND', imageUrl: '/images/categories/natural.jpg', sortOrder: 9 },
+  { name: 'Moissanite', slug: 'moissanite', type: 'DIAMOND', imageUrl: '/images/categories/lab-grown.jpg', sortOrder: 10 },
+  { name: 'Custom Jewelry', slug: 'custom-jewelry', type: 'CUSTOM', imageUrl: '/custom jewellery (1).jpg', sortOrder: 11 },
 ];
 
 export const ensureCategoriesExist = async (): Promise<void> => {
@@ -51,6 +52,13 @@ export const ensureCategoriesExist = async (): Promise<void> => {
       if (!exists) {
         await Category.create(cat);
       }
+    }
+    const categoryImages: Record<string, string> = {
+      'jewellery-sets': '/jewellery sets.jpg',
+      'custom-jewelry': '/custom jewellery (1).jpg',
+    };
+    for (const [slug, imageUrl] of Object.entries(categoryImages)) {
+      await Category.updateOne({ slug }, { $set: { imageUrl } });
     }
   } catch (error) {
     console.error('⚠️ Category auto-seeding warning:', error);

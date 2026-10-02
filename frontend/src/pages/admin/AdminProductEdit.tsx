@@ -190,7 +190,7 @@ const AdminProductEdit = () => {
                 <label className="admin-label">Category *</label>
                 <select required name="categoryId" value={formData.categoryId} onChange={handleChange} className="luxury-input" style={{ borderRadius: '6px' }}>
                   <option value="">Select Category</option>
-                  {categories.map(c => {
+                  {categories.filter(c => c.type !== 'CUSTOM' && c.slug !== 'custom-jewelry').map(c => {
                     const catId = c.id || (c as any)._id;
                     return <option key={catId} value={catId}>{c.name}</option>;
                   })}

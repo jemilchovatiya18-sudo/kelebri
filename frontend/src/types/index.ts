@@ -3,7 +3,7 @@ export type DiamondType = 'LAB_GROWN' | 'NATURAL' | 'MOISSANITE' | 'NONE';
 export type MetalType = 'GOLD' | 'WHITE_GOLD' | 'ROSE_GOLD' | 'SILVER' | 'PLATINUM';
 export type GoldPurity = 'K14' | 'K18' | 'K22' | 'K24' | 'NONE';
 export type Certificate = 'GIA' | 'IGI' | 'SGL' | 'HRD' | 'NONE';
-export type CategoryType = 'JEWELRY' | 'DIAMOND';
+export type CategoryType = 'JEWELRY' | 'DIAMOND' | 'CUSTOM';
 
 // ── Models ─────────────────────────────────────────
 export interface Category {

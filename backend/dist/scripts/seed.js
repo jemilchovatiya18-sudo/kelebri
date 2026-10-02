@@ -20,10 +20,11 @@ const defaultCategories = [
     { name: 'Bracelets & Bangles', slug: 'bracelets-bangles', type: 'JEWELRY', sortOrder: 4 },
     { name: 'Necklaces', slug: 'necklaces', type: 'JEWELRY', sortOrder: 5 },
     { name: 'Tennis Collection', slug: 'tennis-collection', type: 'JEWELRY', sortOrder: 6 },
-    { name: 'Lab Grown Diamonds', slug: 'lab-grown-diamonds', type: 'DIAMOND', sortOrder: 7 },
-    { name: 'Natural Diamonds', slug: 'natural-diamonds', type: 'DIAMOND', sortOrder: 8 },
-    { name: 'Moissanite', slug: 'moissanite', type: 'DIAMOND', sortOrder: 9 },
-    { name: 'Custom Jewelry', slug: 'custom-jewelry', type: 'CUSTOM', sortOrder: 10 },
+    { name: 'Jewellery Sets', slug: 'jewellery-sets', type: 'JEWELRY', sortOrder: 7 },
+    { name: 'Lab Grown Diamonds', slug: 'lab-grown-diamonds', type: 'DIAMOND', sortOrder: 8 },
+    { name: 'Natural Diamonds', slug: 'natural-diamonds', type: 'DIAMOND', sortOrder: 9 },
+    { name: 'Moissanite', slug: 'moissanite', type: 'DIAMOND', sortOrder: 10 },
+    { name: 'Custom Jewelry', slug: 'custom-jewelry', type: 'CUSTOM', sortOrder: 11 },
 ];
 const seed = async () => {
     console.log('🌱 Connecting to MongoDB...');

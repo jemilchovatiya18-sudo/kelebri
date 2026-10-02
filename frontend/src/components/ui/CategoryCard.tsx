@@ -14,7 +14,8 @@ const FALLBACK_IMAGES: Record<string, string> = {
   'lab-grown-diamonds': '/images/categories/lab-grown.jpg',
   'natural-diamonds': '/images/categories/natural.jpg',
   moissanite: '/images/categories/lab-grown.jpg',
-  'custom-jewelry': '/images/categories/necklace.jpg',
+  'jewellery-sets': '/jewellery sets.jpg',
+  'custom-jewelry': '/custom jewellery (1).jpg',
 };
 
 interface CategoryCardProps {
@@ -24,7 +25,7 @@ interface CategoryCardProps {
 
 const CategoryCard = ({ category, variant = 'default' }: CategoryCardProps) => {
   const imageUrl = category.imageUrl || FALLBACK_IMAGES[category.slug] || FALLBACK_IMAGES.rings;
-  const href = `/collections/${category.slug}`;
+  const href = category.slug === 'custom-jewelry' ? '/custom-jewellery' : `/collections/${category.slug}`;
 
   return (
     <motion.div
@@ -79,7 +80,7 @@ const CategoryCard = ({ category, variant = 'default' }: CategoryCardProps) => {
               letterSpacing:'0.04em',
               marginBottom:'0.5rem',
             }}>
-              {category.name}
+              {category.slug === 'custom-jewelry' ? 'Custom Jewellery' : category.name}
             </h3>
             <div style={{
               display:'flex', alignItems:'center', gap:'0.5rem',

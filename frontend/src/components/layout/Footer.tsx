@@ -76,7 +76,7 @@ const Footer = () => {
               Collections
             </h4>
             <ul style={{ listStyle:'none', display:'flex', flexDirection:'column', gap:'0.625rem' }}>
-              {['Rings','Earrings','Pendants','Bracelets & Bangles','Necklaces','Tennis Collection'].map(item => (
+              {['Rings','Earrings','Pendants','Bracelets & Bangles','Necklaces','Tennis Collection','Jewellery Sets'].map(item => (
                 <li key={item}>
                   <Link to={`/collections/${item.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`}
                     style={{ color:'rgba(255,255,255,0.6)', textDecoration:'none', fontSize:'0.8125rem',
@@ -151,20 +151,20 @@ const Footer = () => {
               <div style={{ display:'flex', gap:'0.75rem', alignItems:'flex-start' }}>
                 <MapPin size={16} style={{ color:'var(--color-gold)', flexShrink:0, marginTop:'2px' }} />
                 <p style={{ fontSize:'0.8125rem', lineHeight:1.7 }}>
-                  Your Showroom Address,<br />
-                  City, State – 000000
+                G-8, Rajhans Tower, Mini Bazar,<br/>
+                Varachha Road, Surat-395006
                 </p>
               </div>
               <div style={{ display:'flex', gap:'0.75rem', alignItems:'center' }}>
                 <Phone size={16} style={{ color:'var(--color-gold)', flexShrink:0 }} />
                 <a href="tel:+919876543210" style={{ color:'rgba(255,255,255,0.6)', textDecoration:'none', fontSize:'0.8125rem' }}>
-                  +91 98765 43210
+                  +91 90 81000 301
                 </a>
               </div>
               <div style={{ display:'flex', gap:'0.75rem', alignItems:'center' }}>
                 <Mail size={16} style={{ color:'var(--color-gold)', flexShrink:0 }} />
                 <a href="mailto:info@kelebri.com" style={{ color:'rgba(255,255,255,0.6)', textDecoration:'none', fontSize:'0.8125rem' }}>
-                  info@kelebri.com
+                  kelebrijewels@gmail.com
                 </a>
               </div>
               <div style={{ display:'flex', gap:'0.75rem', alignItems:'flex-start' }}>

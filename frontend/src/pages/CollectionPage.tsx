@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants, Transition } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -25,6 +25,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   necklaces:            'From layered chains to bold collar pieces — refined elegance for every neckline.',
   'bracelets-bangles':  'Effortlessly stack or wear solo — each piece a quiet declaration of taste.',
   'tennis-collection':  'The timeless tennis silhouette, reimagined with Kelebri\'s signature craftsmanship.',
+  'jewellery-sets':     'Complete matched sets designed to be worn together — curated elegance from head to toe.',
   'lab-grown-diamonds': 'Ethically grown, optically identical. The future of fine diamond jewellery.',
   'natural-diamonds':   'Sourced from the earth\'s deepest reaches — uncompromising natural brilliance.',
   moissanite:           'Exceptional fire and brilliance at its most accessible and sustainable.',
@@ -32,7 +33,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
 };
 
 /* ─── Diamond category slugs ─────────────────────────────── */
-const DIAMOND_SLUGS = ['lab-grown-diamonds', 'natural-diamonds', 'moissanite', 'custom-jewelry'];
+const DIAMOND_SLUGS = ['lab-grown-diamonds', 'natural-diamonds', 'moissanite'];
 
 /* ─── Animation variants ─────────────────────────────────── */
 const headerContainer: Variants = {
@@ -90,6 +91,10 @@ const CollectionPage = () => {
   const parentLabel  = isDiamond ? 'Diamonds' : 'Collections';
   const parentHref   = isDiamond ? '/collections/lab-grown-diamonds' : '/collections';
   const description  = CATEGORY_DESCRIPTIONS[slug] ?? '';
+
+  if (category === 'custom-jewelry') {
+    return <Navigate to="/custom-jewellery" replace />;
+  }
 
   return (
     <>

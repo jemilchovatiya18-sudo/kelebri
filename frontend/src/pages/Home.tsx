@@ -39,7 +39,14 @@ const Home = () => {
     queryFn: () => api.get('/products?hero=true&limit=4').then(r => r.data.data as Product[]),
   });
 
-  const jewelryCategories = categoriesData?.filter(c => c.type === 'JEWELRY') || [];
+  const jewelryCategories = categoriesData
+    ?.filter(c => c.type === 'JEWELRY' || c.type === 'CUSTOM')
+    .sort((a, b) => {
+      // Ensure CUSTOM (Custom Jewellery) is always at the end
+      if (a.type === 'CUSTOM' && b.type !== 'CUSTOM') return 1;
+      if (b.type === 'CUSTOM' && a.type !== 'CUSTOM') return -1;
+      return (a.sortOrder || 0) - (b.sortOrder || 0);
+    }) || [];
   const diamondCategories = categoriesData?.filter(c => c.type === 'DIAMOND') || [];
   const bestSellers = bestSellersData || [];
   const heroProducts = heroProductsData || [];
@@ -129,7 +136,7 @@ const Home = () => {
               marginBottom:'1.5rem',
             }}
           >
-            Diamonds & Jewellery
+          
           </motion.p>
 
           {/* Main heading */}
@@ -145,7 +152,7 @@ const Home = () => {
             }}
           >
             Wear the Light<br />
-            <span style={{ fontStyle:'italic', color:'var(--color-gold-light)' }}>
+             <span style={{ fontStyle:'italic', color:'var(--color-gold-light)' }}>
               of Diamonds
             </span>
           </motion.h1>
@@ -242,7 +249,7 @@ const Home = () => {
             <div className="gold-divider" />
           </motion.div>
 
-          {/* 6-category grid */}
+          {/* Fine jewellery categories (6 existing + Jewellery Sets + Custom Jewellery) */}
           <div 
             className="jewelry-categories-grid"
             style={{
@@ -257,6 +264,8 @@ const Home = () => {
               { id:'4', name:'Bracelets & Bangles', slug:'bracelets-bangles', type:'JEWELRY' as const, imageUrl:'/images/categories/bracelets.jpg', publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
               { id:'5', name:'Necklaces', slug:'necklaces', type:'JEWELRY' as const, imageUrl:'/images/categories/necklace.jpg', publicId:null, sortOrder:5, createdAt:'', updatedAt:'' },
               { id:'6', name:'Tennis Collection', slug:'tennis-collection', type:'JEWELRY' as const, imageUrl:'/images/categories/tennis.jpg', publicId:null, sortOrder:6, createdAt:'', updatedAt:'' },
+              { id:'7', name:'Jewellery Sets', slug:'jewellery-sets', type:'JEWELRY' as const, imageUrl:'/jewellery sets.jpg', publicId:null, sortOrder:7, createdAt:'', updatedAt:'' },
+              { id:'10', name:'Custom Jewellery', slug:'custom-jewelry', type:'CUSTOM' as const, imageUrl:'/custom jewellery (1).jpg', publicId:null, sortOrder:8, createdAt:'', updatedAt:'' },
             ]).map((cat, i) => (
               <motion.div
                 key={cat.id}
@@ -372,7 +381,6 @@ const Home = () => {
               { id:'7', name:'Lab Grown Diamonds', slug:'lab-grown-diamonds', type:'DIAMOND' as const, imageUrl:'/images/categories/lab-grown.jpg', publicId:null, sortOrder:1, createdAt:'', updatedAt:'' },
               { id:'8', name:'Natural Diamonds', slug:'natural-diamonds', type:'DIAMOND' as const, imageUrl:'/images/categories/natural.jpg', publicId:null, sortOrder:2, createdAt:'', updatedAt:'' },
               { id:'9', name:'Moissanite', slug:'moissanite', type:'DIAMOND' as const, imageUrl:'/images/categories/lab-grown.jpg', publicId:null, sortOrder:3, createdAt:'', updatedAt:'' },
-              { id:'10', name:'Custom Jewelry', slug:'custom-jewelry', type:'DIAMOND' as const, imageUrl:'/images/categories/necklace.jpg', publicId:null, sortOrder:4, createdAt:'', updatedAt:'' },
             ]).map((cat, i) => (
               <motion.div
                 key={cat.id}
